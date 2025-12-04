@@ -1,27 +1,42 @@
 from os.path import splitext
 from ffmpy import FFmpeg
-from argparse import ArgumentParser
+from argparse import ArgumentParser, BooleanOptionalAction
 
 from src.filters import (
     invert_filter,
-    palette_filter,
-    
-    appropriate_filters
+    palette_filter
 )
 
 DEFAULT_OUTPUT = "default" # This is just a placeholder, not an actual filename.
 DEFAULT_STROBE_EVERY = 2
+DEFAULT_STROBE_PAUSE = 0
 
-def to_output_name(input_path, strobe_every):
-    input_name, input_ext = splitext(input_path)
-    return input_name+f"strobe_every_{strobe_every}"+input_ext
+def to_output_name(args):
+    input_name, input_ext = splitext(args.input)
+    return input_name+f'''_strobe_every_{
+        args.every
+    }{
+        f'_pause_{args.pause}' if args.pause > 0 else ''
+    }{
+        "_inverted" if args.pause > 0 and args.invert_pause else ''
+    }'''+input_ext
+
+def appropriate_filters(args):
+    return ",".join([
+        invert_filter(args.every, args.pause, args.invert_pause),
+        palette_filter() if splitext(args.input)[1].lower() == ".gif" else ""
+    ])
 
 def main():
     parser = ArgumentParser()
 
     parser.add_argument("input")
     parser.add_argument("-o", "--output", nargs = "?", default = DEFAULT_OUTPUT)
+
     parser.add_argument("-n", "--every", type = int, nargs = "?", default = DEFAULT_STROBE_EVERY)
+
+    parser.add_argument("-p", "--pause", type = int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
+    parser.add_argument("-i", "--invert-pause", default = False, action = BooleanOptionalAction)
 
     args = parser.parse_args()
 
@@ -29,7 +44,7 @@ def main():
     # To ArgumentParser ; only constant values.
 
     args.output = \
-        to_output_name(args.input, args.every) \
+        to_output_name(args) \
         if args.output == DEFAULT_OUTPUT \
         else args.output
 
@@ -39,7 +54,7 @@ def main():
         outputs = {args.output: [
             "-c:a", "copy", # this cannot be done for video, so transcoding WILL occur
             # because there is no way for ffmpeg to reference the input codec in the filter chain...
-            "-vf", appropriate_filters(args.input, args.every)
+            "-vf", appropriate_filters(args)
         ]}
     )
 
