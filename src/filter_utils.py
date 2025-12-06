@@ -5,7 +5,7 @@ from math import lcm
 def join_and(*conditions):
     return '*'.join(conditions)
 
-# Enable a filter only after or before a starting frame.
+# Enable a filter only after or before a starting/ending frame.
 
 def enable_from(start):
     return f"'gte(n, {start})'"
