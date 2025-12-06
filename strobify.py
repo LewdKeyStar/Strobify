@@ -14,10 +14,18 @@ DEFAULT_STROBE_PAUSE = 0
 DEFAULT_RGB_SHIFT_INTENSITY = 5
 DEFAULT_RGB_SHIFT_EVERY = 2
 
+## FFMPEG uses this as its upper bound.
+
+UINT32_MAX = 4294967295
+
 def to_output_name(args):
     input_name, input_ext = splitext(args.input)
     return input_name+f'''_strobe_every_{
         args.every
+    }{
+        f'_start_from_{args.start_strobe_at}' if args.start_strobe_at > 0 else ''
+    }{
+        f'_end_at_{args.end_strobe_at}' if args.end_strobe_at < UINT32_MAX else ''
     }{
         f'_pause_{args.pause}' if args.pause > 0 else ''
     }{
@@ -31,11 +39,11 @@ def to_output_name(args):
 
 def appropriate_filters(args):
     all_filters = [
-        invert_filter(args.every, args.pause, args.invert_pause),
+        invert_filter(args.start_strobe_at, args.end_strobe_at, args.every, args.pause, args.invert_pause),
         rgbshift_filter(args.rgb_shift_intensity, args.rgb_shift_every) if args.rgb_shift else "",
         palette_filter() if splitext(args.input)[1].lower() == ".gif" else ""
     ]
-    
+
     return ",".join([
         filter for filter in all_filters if filter != ""
     ])
@@ -47,6 +55,9 @@ def main():
     parser.add_argument("-o", "--output", nargs = "?", default = DEFAULT_OUTPUT)
 
     parser.add_argument("-n", "--every", type = int, nargs = "?", default = DEFAULT_STROBE_EVERY)
+
+    parser.add_argument("-s", "--start-strobe-at", type = int, nargs = "?", default = 0)
+    parser.add_argument("-e", "--end-strobe-at", type = int, nargs = "?", default = UINT32_MAX)
 
     parser.add_argument("-p", "--pause", type = int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
     parser.add_argument("-ip", "--invert-pause", default = False, action = BooleanOptionalAction)

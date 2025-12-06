@@ -1,5 +1,18 @@
 from math import lcm
 
+# Returns an FFMPEG "and" condition combining the desired filters.
+
+def join_and(*conditions):
+    return '*'.join(conditions)
+
+# Enable a filter only after or before a starting frame.
+
+def enable_from(start):
+    return f"'gte(n, {start})'"
+
+def enable_until(end):
+    return f"'lte(n, {end})'"
+
 # Trigger filter only every n frames.
 
 def enable_every(freq):
@@ -16,15 +29,3 @@ def enable_at_interval(freq, interval, should_invert):
 
     return "1" if interval == 0 \
     else f"'{compar_func}(mod(n, {2*lcm(freq, interval)}), {lcm(freq, interval)})'"
-
-# Utility for the invert_filter.
-
-def strobe_enable_conds(strobe_every, strobe_pause, should_invert_strobe_pause):
-    return (
-        "enable="
-        f'''{
-            enable_every(strobe_every)
-        }''' '*' f'''{
-            enable_at_interval(strobe_every, strobe_pause, should_invert_strobe_pause)
-        }'''
-    )

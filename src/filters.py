@@ -1,12 +1,22 @@
-from src.filter_utils import (
-    strobe_enable_conds,
-    enable_every
-)
+from src.filter_utils import *
 
-def invert_filter(strobe_every, strobe_pause, should_invert_strobe_pause):
+def invert_filter(
+    start_strobe_at,
+    end_strobe_at,
+
+    strobe_every,
+
+    strobe_pause,
+    should_invert_strobe_pause
+):
     return (
         "lutrgb=r=negval:g=negval:b=negval:"
-        f"{strobe_enable_conds(strobe_every, strobe_pause, should_invert_strobe_pause)}"
+        f'''enable={join_and(
+            enable_from(start_strobe_at),
+            enable_until(end_strobe_at),
+            enable_every(strobe_every),
+            enable_at_interval(strobe_every, strobe_pause, should_invert_strobe_pause)
+        )}'''
     )
 
 def rgbshift_filter(shift_intensity, shift_every):
