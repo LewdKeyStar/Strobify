@@ -34,13 +34,28 @@ def to_output_name(args):
         (
             f'_rgb_{args.rgb_shift_intensity}px'
             f'_every_{args.rgb_shift_every}'
+            + (f'_start_from_{args.rgb_shift_start_at}' if args.rgb_shift_start_at > 0 else '')
+            + (f'_end_at_{args.rgb_shift_end_at}' if args.rgb_shift_end_at < UINT32_MAX else '')
         ) if args.rgb_shift else ''
     }'''+input_ext
 
 def appropriate_filters(args):
     all_filters = [
-        invert_filter(args.start_strobe_at, args.end_strobe_at, args.every, args.pause, args.invert_pause),
-        rgbshift_filter(args.rgb_shift_intensity, args.rgb_shift_every) if args.rgb_shift else "",
+        invert_filter(
+            args.start_strobe_at,
+            args.end_strobe_at,
+            args.every,
+            args.pause,
+            args.invert_pause
+        ),
+
+        rgbshift_filter(
+            args.rgb_shift_start_at,
+            args.rgb_shift_end_at,
+            args.rgb_shift_intensity,
+            args.rgb_shift_every
+        ) if args.rgb_shift else "",
+
         palette_filter() if splitext(args.input)[1].lower() == ".gif" else ""
     ]
 
@@ -64,7 +79,10 @@ def main():
 
     parser.add_argument("-rgb", "--rgb-shift", default = False, action = BooleanOptionalAction)
     parser.add_argument("-rsi", "--rgb-shift-intensity", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_INTENSITY)
-    parser.add_argument("-rse", "--rgb-shift-every", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_EVERY)
+    parser.add_argument("-rsn", "--rgb-shift-every", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_EVERY)
+
+    parser.add_argument("-rss", "--rgb-shift-start-at", type = int, nargs = "?", default = 0)
+    parser.add_argument("-rse", "--rgb-shift-end-at", type = int, nargs = "?", default = UINT32_MAX)
 
     args = parser.parse_args()
 

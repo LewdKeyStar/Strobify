@@ -19,10 +19,14 @@ def invert_filter(
         )}'''
     )
 
-def rgbshift_filter(shift_intensity, shift_every):
+def rgbshift_filter(start_shift_at, end_shift_at, shift_intensity, shift_every):
     return (
         f"rgbashift=rh={shift_intensity}:gh={-shift_intensity}:"
-        f"enable={enable_every(shift_every)}"
+        f'''enable={join_and(
+            enable_from(start_shift_at),
+            enable_until(end_shift_at),
+            enable_every(shift_every)
+        )}'''
     )
 
 # For GIF management ;
