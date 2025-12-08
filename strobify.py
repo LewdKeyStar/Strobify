@@ -2,6 +2,11 @@ from os.path import splitext
 from ffmpy import FFmpeg
 from argparse import ArgumentParser, BooleanOptionalAction
 
+from src.ffprobe_utils import (
+    get_resolution,
+    get_fps
+)
+
 from src.filters import (
     invert_filter,
     rgbshift_filter,
@@ -41,7 +46,7 @@ def to_output_name(args):
         ) if args.rgb_shift else ''
     }'''+input_ext
 
-def appropriate_filters(args):
+def appropriate_filters(args, *, resolution, fps):
     all_filters = [
         invert_filter(
             args.start_strobe_at,
@@ -104,7 +109,11 @@ def main():
         outputs = {args.output: [
             "-c:a", "copy", # this cannot be done for video, so transcoding WILL occur
             # because there is no way for ffmpeg to reference the input codec in the filter chain...
-            "-vf", appropriate_filters(args)
+            "-vf", appropriate_filters(
+                args,
+                resolution = get_resolution(args.input),
+                fps = get_fps(args.input)
+            )
         ]}
     )
 
