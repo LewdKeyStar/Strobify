@@ -35,17 +35,17 @@ UINT32_MAX = 4294967295
 def to_output_name(args):
     input_name, input_ext = splitext(args.input)
     return input_name+f'''_strobe_every_{
-        args.every
+        args.strobe_every
     }{
-        f'_start_from_{args.start_strobe_at}' if args.start_strobe_at > 0 else ''
+        f'_start_from_{args.strobe_start_at}' if args.strobe_start_at > 0 else ''
     }{
-        f'_end_at_{args.end_strobe_at}' if args.end_strobe_at < UINT32_MAX else ''
+        f'_end_at_{args.strobe_end_at}' if args.strobe_end_at < UINT32_MAX else ''
     }{
-        f'_pause_{args.pause}' if args.pause > 0 else ''
+        f'_pause_{args.strobe_pause}' if args.strobe_pause > 0 else ''
     }{
-        f'_active_{args.active}' if args.pause > 0 and args.active > 0 else ''
+        f'_active_{args.strobe_active}' if args.strobe_pause > 0 and args.strobe_active > 0 else ''
     }{
-        "_inverted" if args.pause > 0 and args.invert_pause else ''
+        "_inverted" if args.strobe_pause > 0 and args.strobe_invert_pause else ''
     }{
         (
             f'_rgb_{args.rgb_shift_intensity}px'
@@ -69,12 +69,12 @@ def to_output_name(args):
 def appropriate_filters(args, *, resolution, fps):
     all_filters = [
         invert_filter(
-            args.start_strobe_at,
-            args.end_strobe_at,
-            args.every,
-            args.pause,
-            args.active,
-            args.invert_pause
+            args.strobe_start_at,
+            args.strobe_end_at,
+            args.strobe_every,
+            args.strobe_pause,
+            args.strobe_active,
+            args.strobe_invert_pause
         ),
 
         rgbshift_filter(
@@ -114,14 +114,14 @@ def main():
     parser.add_argument("input")
     parser.add_argument("-o", "--output", nargs = "?", default = DEFAULT_OUTPUT)
 
-    parser.add_argument("-n", "--every", type = int, nargs = "?", default = DEFAULT_STROBE_EVERY)
+    parser.add_argument("-n", "--strobe-every", type = int, nargs = "?", default = DEFAULT_STROBE_EVERY)
 
-    parser.add_argument("-s", "--start-strobe-at", type = int, nargs = "?", default = 0)
-    parser.add_argument("-e", "--end-strobe-at", type = int, nargs = "?", default = UINT32_MAX)
+    parser.add_argument("-s", "--strobe-start-at", type = int, nargs = "?", default = 0)
+    parser.add_argument("-e", "--strobe-end-at", type = int, nargs = "?", default = UINT32_MAX)
 
-    parser.add_argument("-a", "--active", type=int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
-    parser.add_argument("-p", "--pause", type = int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
-    parser.add_argument("-ip", "--invert-pause", default = False, action = BooleanOptionalAction)
+    parser.add_argument("-a", "--strobe-active", type=int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
+    parser.add_argument("-p", "--strobe-pause", type = int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
+    parser.add_argument("-ip", "--strobe-invert-pause", default = False, action = BooleanOptionalAction)
 
     parser.add_argument("-rgb", "--rgb-shift", default = False, action = BooleanOptionalAction)
     parser.add_argument("-rsi", "--rgb-shift-intensity", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_INTENSITY)
