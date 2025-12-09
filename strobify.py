@@ -1,6 +1,6 @@
 from os.path import splitext
 from ffmpy import FFmpeg
-from argparse import ArgumentParser, BooleanOptionalAction
+from argparse import ArgumentParser
 
 from src.ffprobe_utils import (
     get_resolution,
@@ -14,23 +14,11 @@ from src.filters import (
     palette_filter
 )
 
-DEFAULT_OUTPUT = "default" # This is just a placeholder, not an actual filename.
+from src.parser_utils import (
+    register_feature
+)
 
-DEFAULT_STROBE_EVERY = 2
-DEFAULT_STROBE_PAUSE = 0
-
-DEFAULT_RGB_SHIFT_INTENSITY = 5
-DEFAULT_RGB_SHIFT_EVERY = 2
-
-DEFAULT_ZOOM_FACTOR = 2
-DEFAULT_ZOOM_CENTER_X = 0 # TODO : relative coordinates instead?
-DEFAULT_ZOOM_CENTER_Y = 0
-DEFAULT_ZOOM_ALPHA = 0.5
-DEFAULT_ZOOM_PAUSE = 0
-
-## FFMPEG uses this as its upper bound.
-
-UINT32_MAX = 4294967295
+from src.constants import *
 
 def to_output_name(args):
     input_name, input_ext = splitext(args.input)
@@ -114,35 +102,68 @@ def main():
     parser.add_argument("input")
     parser.add_argument("-o", "--output", nargs = "?", default = DEFAULT_OUTPUT)
 
-    parser.add_argument("-n", "--strobe-every", type = int, nargs = "?", default = DEFAULT_STROBE_EVERY)
+    register_feature(
+        "strobe",
 
-    parser.add_argument("-s", "--strobe-start-at", type = int, nargs = "?", default = 0)
-    parser.add_argument("-e", "--strobe-end-at", type = int, nargs = "?", default = UINT32_MAX)
+        parser = parser,
 
-    parser.add_argument("-a", "--strobe-active", type=int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
-    parser.add_argument("-p", "--strobe-pause", type = int, nargs = "?", default = DEFAULT_STROBE_PAUSE)
-    parser.add_argument("-ip", "--strobe-invert-pause", default = False, action = BooleanOptionalAction)
+        default_values = {
+            "every": DEFAULT_STROBE_EVERY,
+            "pause": DEFAULT_STROBE_PAUSE
+        },
 
-    parser.add_argument("-rgb", "--rgb-shift", default = False, action = BooleanOptionalAction)
-    parser.add_argument("-rsi", "--rgb-shift-intensity", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_INTENSITY)
-    parser.add_argument("-rsn", "--rgb-shift-every", type = int, nargs = "?", default = DEFAULT_RGB_SHIFT_EVERY)
+        # TODO : this is done for ease on the options,
+        # but in practice it also means there is an option called "-" !
+        # I'm not sure how valid that is
+        shorthand_prefix = "",
+        enable_default = True
+    )
 
-    parser.add_argument("-rss", "--rgb-shift-start-at", type = int, nargs = "?", default = 0)
-    parser.add_argument("-rse", "--rgb-shift-end-at", type = int, nargs = "?", default = UINT32_MAX)
+    register_feature(
+        "rgb_shift",
 
-    parser.add_argument("-z", "--zoom", default = False, action = BooleanOptionalAction)
-    parser.add_argument("-zf", "--zoom-factor", type = int, nargs = "?", default = DEFAULT_ZOOM_FACTOR)
-    parser.add_argument("-zx", "--zoom-center-x", type = int, nargs = "?", default = DEFAULT_ZOOM_CENTER_X)
-    parser.add_argument("-zy", "--zoom-center-y", type = int, nargs = "?", default = DEFAULT_ZOOM_CENTER_Y)
+        ["intensity"],
+        {"intensity": {"default": DEFAULT_RGB_SHIFT_INTENSITY}},
 
-    parser.add_argument("-zl", "--zoom-alpha", type = float, nargs = "?", default = DEFAULT_ZOOM_ALPHA)
+        parser = parser,
 
-    parser.add_argument("-zs", "--zoom-start-at", type = int, nargs = "?", default = 0)
-    parser.add_argument("-ze", "--zoom-end-at", type = int, nargs = "?", default = UINT32_MAX)
+        default_values = {
+            "every": DEFAULT_RGB_SHIFT_EVERY,
+            "pause": DEFAULT_RGB_SHIFT_PAUSE
+        }
+    )
 
-    parser.add_argument("-za", "--zoom-active", type = int, nargs = "?", default = DEFAULT_ZOOM_PAUSE)
-    parser.add_argument("-zp", "--zoom-pause", type = int, nargs = "?", default = DEFAULT_ZOOM_PAUSE)
-    parser.add_argument("-zip", "--zoom-invert-pause", default = False, action = BooleanOptionalAction)
+    register_feature(
+        "zoom",
+
+        ["factor", "center_x", "center_y", "alpha"],
+        {
+            "factor": {"default": DEFAULT_ZOOM_FACTOR},
+
+            "center_x": {
+                "shorthand": "x",
+                "default": DEFAULT_ZOOM_CENTER_X
+            },
+
+            "center_y": {
+                "shorthand": "y",
+                "default": DEFAULT_ZOOM_CENTER_Y
+            },
+
+            "alpha": {
+                "shorthand": "l",
+                "type": float,
+                "default": DEFAULT_ZOOM_ALPHA
+            }
+        },
+
+        parser = parser,
+
+        default_values = {
+            "every": DEFAULT_ZOOM_EVERY,
+            "pause": DEFAULT_ZOOM_PAUSE
+        }
+    )
 
     args = parser.parse_args()
 
