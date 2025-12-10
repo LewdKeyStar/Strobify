@@ -6,63 +6,31 @@ from src.ffprobe_utils import (
     get_fps
 )
 
-from src.filters import (
-    invert_filter,
-    rgbshift_filter,
-    zoom_filter,
-    palette_filter
-)
+from src.feature_list import features
+from src.filters import palette_filter
 
 from src.parser_utils import register_feature
-from src.feature_list import features
 
 from src.name_utils import is_gif, to_output_name
 from src.constants import DEFAULT_OUTPUT
 
 def appropriate_filters(args, *, resolution, fps):
+
     all_filters = [
-        invert_filter(
-            args.strobe_start_at,
-            args.strobe_end_at,
+        *[
+            feature_filter(
+                args,
+                # *[locals()[supp_arg] for supp_arg in feature_filter.supplemental_arguments]
+                # ...but that doesn't work for some reason??????
+                # It produces a KeyError for "resolution" or "fps".
+                # Why????
 
-            args.strobe_every,
-
-            args.strobe_pause,
-            args.strobe_active,
-            args.strobe_invert_pause
-        ) if args.strobe else "",
-
-        rgbshift_filter(
-            args.rgb_shift_intensity,
-
-            args.rgb_shift_start_at,
-            args.rgb_shift_end_at,
-
-            args.rgb_shift_every,
-
-            args.rgb_shift_pause,
-            args.rgb_shift_active,
-            args.rgb_shift_invert_pause
-        ) if args.rgb_shift else "",
-
-        zoom_filter(
-            resolution,
-            fps,
-
-            args.zoom_factor,
-            args.zoom_center_x,
-            args.zoom_center_y,
-            args.zoom_alpha,
-
-            args.zoom_start_at,
-            args.zoom_end_at,
-
-            args.zoom_every,
-
-            args.zoom_pause,
-            args.zoom_active,
-            args.zoom_invert_pause
-        ) if args.zoom else "",
+                # So I have to do this stupid shit instead...
+                # TODO : no, seriously, what the actual fuck
+                *([resolution, fps] if feature_filter.name == "zoom" else [])
+            )
+            for feature_filter in features
+         ],
 
         palette_filter() if is_gif(args.input) else ""
     ]

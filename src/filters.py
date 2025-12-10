@@ -1,6 +1,6 @@
-from src.filter_utils import *
+from src.filter_enable_settings import *
 
-def invert_filter(
+def strobe_filter(
     start_strobe_at,
     end_strobe_at,
 
@@ -25,9 +25,9 @@ def invert_filter(
         )}'''
     )
 
-def rgbshift_filter(
+def rgb_shift_filter(
     shift_intensity,
-    
+
     start_shift_at,
     end_shift_at,
 

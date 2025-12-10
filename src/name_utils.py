@@ -1,7 +1,6 @@
 from src.feature import Feature
 from src.feature_list import features
-
-from src.constants import UINT32_MAX
+from src.filter_enable_settings_list import settings
 
 from os.path import splitext
 from re import sub
@@ -34,12 +33,7 @@ def feature_section(
     return "_".join([
         f"{feature.name}",
         print_feature_params(),
-        conditional_setting("every", lambda x: x > 1),
-        conditional_setting("start_at", lambda x: x > 0),
-        conditional_setting("end_at", lambda x: x < UINT32_MAX),
-        conditional_setting("pause", lambda x: x > 0),
-        conditional_setting("active", lambda x: x > 0),
-        conditional_setting("invert_pause", lambda x: x)
+        *[conditional_setting(setting, active_condition) for (setting, active_condition) in settings.items()]
     ])
 
 def to_output_name(args):

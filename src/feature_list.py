@@ -6,6 +6,10 @@ from src.feature import (
     FeatureDefaultValues
 )
 
+# A declarative list of features for the script.
+# Once a feature is declared here and implemented as its filter function,
+# It will automatically become available.
+
 features: list[Feature] = [
     Feature(
         name = "strobe",
@@ -47,6 +51,8 @@ features: list[Feature] = [
                 default = DEFAULT_ZOOM_ALPHA,
                 type = float,
             )
-        ]
+        ],
+
+        supplemental_arguments = ["resolution", "fps"]
     )
 ]
