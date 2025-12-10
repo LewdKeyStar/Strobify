@@ -51,7 +51,7 @@ def to_output_name(args):
         "_".join([
             input_name,
             "_".join([feature_section(args, feature) for feature in features])
-        ]) + input_ext
+        ]).rstrip("_") + input_ext
     )
 
 def is_gif(input_name):
