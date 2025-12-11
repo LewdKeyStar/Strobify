@@ -25,7 +25,7 @@ def feature_section(
 
     def param_print(param):
         param_value = getattr(args, f"{feature.name}_{param.name}")
-        return "_".join([f"{param.name}", f"{param_value}"+f"{param.unit}"])
+        return "_".join([f"{param.shorthand}", f"{param_value}"+f"{param.unit}"])
 
     def print_feature_params():
         return "_".join([param_print(param) for param in feature.parameters])
