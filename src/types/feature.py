@@ -6,6 +6,7 @@ from src.utils.text_utils import abbreviate
 from src.decl.filter_enable_settings_list import settings
 
 import src.impl.feature_filters
+from src.impl.filter_enable_settings import *
 
 @dataclass
 class FeatureDefaultValues:
@@ -41,6 +42,22 @@ class Feature(Shortenable):
 
     supplemental_arguments: list[str] = field(default_factory=list)
 
+    @property
+    def parameter_names(self):
+        return [param.name for param in self.parameters]
+
+    def get_param_value(self, args, param_name):
+        if param_name not in self.parameter_names:
+            raise ValueError("Invalid parameter :", param_name)
+            
+        return getattr(args, f"{self.name}_{param_name}")
+
+    def get_setting_value(self, args, setting_name):
+        if setting_name not in settings.keys():
+            raise ValueError("Invalid setting :", setting_name)
+
+        return getattr(args, f"{self.name}_{setting_name}")
+
     def __call__(self, args, *supp_args):
 
         if not getattr(args, self.name):
@@ -49,7 +66,22 @@ class Feature(Shortenable):
         return getattr(src.impl.feature_filters, f"{self.name}_filter")(
             *supp_args,
 
-            *[getattr(args, f"{self.name}_{param.name}") for param in self.parameters],
+            *[self.get_param_value(args, param_name) for param_name in self.parameter_names],
 
-            *[getattr(args, f"{self.name}_{setting}") for setting in settings.keys()]
+            *[self.get_setting_value(args, setting_name) for setting_name in settings.keys()]
+        ) + (
+            f'''enable={join_and(
+                enable_from(self.get_setting_value(args, "start_at")),
+                enable_until(self.get_setting_value(args, "end_at")),
+                enable_every(
+                    self.get_setting_value(args, "start_at"),
+                    self.get_setting_value(args, "every")
+                ),
+                enable_at_interval(
+                    self.get_setting_value(args, "start_at"),
+                    self.get_setting_value(args, "invert_pause"),
+                    pause_interval = self.get_setting_value(args, "pause"),
+                    active_interval = self.get_setting_value(args, "active")
+                )
+            )}'''
         )
