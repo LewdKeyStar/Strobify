@@ -61,6 +61,8 @@ def shake_filter(
     shake_frequency,
     shake_dampen,
 
+    shake_blur_radius,
+
     start_shake_at,
     end_shake_at,
 
@@ -79,7 +81,9 @@ def shake_filter(
 
     return (
         f"split[orig][moving];"
-        f"[orig][moving]overlay={shake_axis}='"
+        f"[moving]dblur=angle={'0' if shake_axis == 'x' else '90'}"
+        f":radius={shake_blur_radius}[moving_blurred];"
+        f"[orig][moving_blurred]overlay={shake_axis}='"
         f"exp(-{shake_dampen}*{t_modulo_interval()})"
         f"*{shake_amplitude}*sin(2*PI*{shake_frequency}*{t_modulo_interval()})':"
         f'''enable={join_and(

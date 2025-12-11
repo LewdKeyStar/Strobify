@@ -62,7 +62,8 @@ features: list[Feature] = [
                 default = DEFAULT_SHAKE_FREQUENCY,
                 unit = "hz"
             ),
-            FeatureParameter("dampen", type = float, default = DEFAULT_SHAKE_DAMPEN)
+            FeatureParameter("dampen", type = float, default = DEFAULT_SHAKE_DAMPEN),
+            FeatureParameter("blur_radius", type = int, default = DEFAULT_SHAKE_BLUR)
         ],
 
         supplemental_arguments = ["fps"]
