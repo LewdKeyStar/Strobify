@@ -1,10 +1,8 @@
 from src.constants import *
 
-from src.types.feature import (
-    Feature,
-    FeatureParameter,
-    FeatureDefaultValues
-)
+from src.types.Feature import Feature
+from src.types.FeatureParameter import FeatureParameter
+from src.types.FeatureDefaultValues import FeatureDefaultValues
 
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,

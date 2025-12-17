@@ -2,7 +2,7 @@ from argparse import BooleanOptionalAction
 
 from src.constants import UINT32_MAX
 
-from src.types.feature import Feature
+from src.types.Feature import Feature
 
 from src.utils.text_utils import to_kebab, abbreviate
 

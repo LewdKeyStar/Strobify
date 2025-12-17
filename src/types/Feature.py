@@ -1,36 +1,13 @@
-from abc import ABC
 from dataclasses import dataclass, field
 
-from src.utils.text_utils import abbreviate
+from src.types.Shortenable import Shortenable
+from src.types.FeatureDefaultValues import FeatureDefaultValues
+from src.types.FeatureParameter import FeatureParameter
 
 from src.decl.filter_enable_settings_list import settings
 
 import src.impl.feature_filters
 from src.impl.filter_enable_settings import *
-
-@dataclass
-class FeatureDefaultValues:
-    every: int = 1
-    pause: int = 0
-
-@dataclass(kw_only = True)
-class Shortenable(ABC):
-    special_shorthand: str = None
-
-    @property
-    def shorthand(self):
-        return (
-            self.special_shorthand
-            if self.special_shorthand is not None
-            else abbreviate(self.name)
-        )
-
-@dataclass
-class FeatureParameter(Shortenable):
-    name: str
-    default: any = 0
-    unit: str = ""
-    type: any = int
 
 @dataclass
 class Feature(Shortenable):

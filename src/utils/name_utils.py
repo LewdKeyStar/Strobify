@@ -1,4 +1,4 @@
-from src.types.feature import Feature
+from src.types.Feature import Feature
 from src.decl.feature_list import prioritized_features
 from src.decl.filter_enable_settings_list import settings
 
