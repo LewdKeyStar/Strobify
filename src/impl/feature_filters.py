@@ -90,3 +90,23 @@ def zoom_filter(
         f"[zoomed]format=argb,colorchannelmixer=aa={zoom_alpha}[zoomed_alpha];"
         f'''[orig][zoomed_alpha]overlay=''' # On purpose : enable option provided by feature call.
     )
+
+def frame_randomizer_filter(
+    frame_randomizer_max_frames,
+    frame_randomizer_seed,
+
+    start_frame_randomizer_at,
+    end_frame_randomizer_at,
+
+    frame_randomizer_every,
+
+    frame_randomizer_pause,
+    frame_randomizer_active,
+    should_invert_frame_randomizer_pause
+):
+    return (
+        f"split[orig][to_randomize];"
+        f"[to_randomize]random=frames={frame_randomizer_max_frames}:"
+        f"seed={frame_randomizer_seed}[randomized];"
+        f"[orig][randomized]overlay="
+    )

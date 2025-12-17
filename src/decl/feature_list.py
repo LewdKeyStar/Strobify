@@ -85,6 +85,15 @@ features: list[Feature] = [
         ],
 
         supplemental_arguments = ["resolution", "fps"]
+    ),
+
+    Feature(
+        name = "frame_randomizer",
+
+        parameters = [
+            FeatureParameter("max_frames", special_shorthand = "max", default = DEFAULT_RANDOMIZER_MAX_FRAMES),
+            FeatureParameter("seed", special_shorthand = "sd")
+        ]
     )
 ]
 
