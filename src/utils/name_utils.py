@@ -13,13 +13,13 @@ def feature_section(
     if not getattr(args, feature.name): # Never None, either True or False
         return ''
 
-    def conditional_setting(setting, active_condition):
+    def conditional_setting(setting):
 
-        setting_value = getattr(args, f'{feature.name}_{setting}')
+        setting_value = getattr(args, f'{feature.name}_{setting.name}')
 
         return (
-            "_".join([f"{setting}", f"{setting_value}"])
-            if active_condition(setting_value)
+            "_".join([f"{setting.name}", f"{setting_value}"])
+            if setting.active_condition(setting_value)
             else ''
         )
 
@@ -33,7 +33,7 @@ def feature_section(
     return "_".join([
         f"{feature.name}",
         print_feature_params(),
-        *[conditional_setting(setting, active_condition) for (setting, active_condition) in settings.items()]
+        *[conditional_setting(setting) for setting in settings]
     ])
 
 def to_output_name(args):

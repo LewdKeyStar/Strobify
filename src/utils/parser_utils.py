@@ -1,6 +1,6 @@
 from argparse import BooleanOptionalAction
 
-from src.constants import UINT32_MAX
+from src.decl.filter_enable_settings_list import settings
 
 from src.types.Feature import Feature
 
@@ -18,52 +18,38 @@ def register_feature(
         action = BooleanOptionalAction
     )
 
-    parser.add_argument(
-        f"-{feature.shorthand}s",
-        f"--{to_kebab(feature.name)}-start-at",
-        type = int,
-        nargs = "?",
-        default = 0
-    )
+    for setting in settings:
 
-    parser.add_argument(
-        f"-{feature.shorthand}e",
-        f"--{to_kebab(feature.name)}-end-at",
-        type = int,
-        nargs = "?",
-        default = UINT32_MAX
-    )
+        # This has to be preemptively declared.
+        # The double star seemingly doesn't work on a multiline parenthesized literal.
 
-    parser.add_argument(
-        f"-{feature.shorthand}n",
-        f"--{to_kebab(feature.name)}-every",
-        type = int,
-        nargs = "?",
-        default = feature.default_values.every
-    )
+        type_dependant_parser_arguments = (
+            {
+                "type": setting.type,
+                "nargs": "?"
+            }
+            if setting.type != bool
+            else {
+                "action": BooleanOptionalAction
+            }
+        )
 
-    parser.add_argument(
-        f"-{feature.shorthand}a",
-        f"--{to_kebab(feature.name)}-active",
-        type = int,
-        nargs = "?",
-        default = feature.default_values.pause
-    )
+        parser.add_argument(
+            f"-{feature.shorthand}{setting.shorthand}",
+            f"--{to_kebab(feature.name)}-{to_kebab(setting.name)}",
 
-    parser.add_argument(
-        f"-{feature.shorthand}p",
-        f"--{to_kebab(feature.name)}-pause",
-        type = int,
-        nargs = "?",
-        default = feature.default_values.pause
-    )
+            **type_dependant_parser_arguments,
 
-    parser.add_argument(
-        f"-{feature.shorthand}ip",
-        f"--{to_kebab(feature.name)}-invert-pause",
-        default = False,
-        action = BooleanOptionalAction
-    )
+            # I don't like this default override scheme,
+            # I don't like that the Feature has to return None
+            # If it doesn't override the setting's "default default".
+
+            default = (
+                feature.default_setting_value(setting.name)
+                if feature.default_setting_value(setting.name) is not None
+                else setting.default
+            )
+        )
 
     # Feature priority is different from other arguments :
     # It's not a setting on the filter itself,

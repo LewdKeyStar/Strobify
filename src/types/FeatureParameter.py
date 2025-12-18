@@ -2,6 +2,9 @@ from dataclasses import dataclass
 
 from src.types.Shortenable import Shortenable
 
+# This is a class for feature-specific parameters, which are unique to this feature,
+# As opposed to FeatureSetting.
+
 @dataclass
 class FeatureParameter(Shortenable):
     name: str

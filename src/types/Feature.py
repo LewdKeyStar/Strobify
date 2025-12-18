@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 
 from src.types.Shortenable import Shortenable
-from src.types.FeatureDefaultValues import FeatureDefaultValues
+from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 from src.types.FeatureParameter import FeatureParameter
 
-from src.decl.filter_enable_settings_list import settings
+from src.decl.filter_enable_settings_list import settings, valid_setting_names
 
 import src.impl.feature_filters
 from src.impl.filter_enable_settings import *
@@ -14,7 +14,7 @@ class Feature(Shortenable):
     name: str
     enable_default: bool = False
 
-    default_values: FeatureDefaultValues = FeatureDefaultValues()
+    default_setting_values: FeatureSettingDefaultValues = FeatureSettingDefaultValues()
     parameters: list[FeatureParameter] = field(default_factory=list)
 
     supplemental_arguments: list[str] = field(default_factory=list)
@@ -23,6 +23,14 @@ class Feature(Shortenable):
     def parameter_names(self):
         return [param.name for param in self.parameters]
 
+    def default_setting_value(self, setting_name):
+        return (
+            self.default_setting_values[setting_name]
+            if setting_name in self.default_setting_values
+            else None # Ouch! I don't like this!
+            # But the alternative is to run a find() on the settings list...
+        )
+
     def get_param_value(self, args, param_name):
         if param_name not in self.parameter_names:
             raise ValueError("Invalid parameter :", param_name)
@@ -30,7 +38,7 @@ class Feature(Shortenable):
         return getattr(args, f"{self.name}_{param_name}")
 
     def get_setting_value(self, args, setting_name):
-        if setting_name not in settings.keys():
+        if setting_name not in valid_setting_names:
             raise ValueError("Invalid setting :", setting_name)
 
         return getattr(args, f"{self.name}_{setting_name}")
@@ -51,7 +59,7 @@ class Feature(Shortenable):
             # This has the terrible consequence of requiring every other filter needlessly take its condition settings,
             # Even if they don't use them, for the sake of interface uniformity.
             # Yikes!
-            *[self.get_setting_value(args, setting_name) for setting_name in settings.keys()]
+            *[self.get_setting_value(args, setting.name) for setting in settings]
         ) + (
             f'''enable={join_and(
                 enable_from(self.get_setting_value(args, "start_at")),

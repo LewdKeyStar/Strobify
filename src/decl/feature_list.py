@@ -2,7 +2,7 @@ from src.constants import *
 
 from src.types.Feature import Feature
 from src.types.FeatureParameter import FeatureParameter
-from src.types.FeatureDefaultValues import FeatureDefaultValues
+from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,
@@ -15,10 +15,10 @@ features: list[Feature] = [
         # but in practice it also means there is an option called "-" !
         # I'm not sure how valid that is
 
-        default_values = FeatureDefaultValues(
-            DEFAULT_STROBE_EVERY,
-            DEFAULT_STROBE_PAUSE
-        ),
+        default_setting_values = FeatureSettingDefaultValues({
+            "every": DEFAULT_STROBE_EVERY,
+            "pause": DEFAULT_STROBE_PAUSE
+        }),
 
         enable_default = True
     ),
@@ -26,10 +26,10 @@ features: list[Feature] = [
     Feature(
         name = "rgb_shift",
 
-        default_values = FeatureDefaultValues(
-            DEFAULT_RGB_SHIFT_EVERY,
-            DEFAULT_RGB_SHIFT_PAUSE
-        ),
+        default_setting_values = FeatureSettingDefaultValues({
+            "every": DEFAULT_RGB_SHIFT_EVERY,
+            "pause": DEFAULT_RGB_SHIFT_PAUSE
+        }),
 
         parameters = [
             FeatureParameter("intensity", default = DEFAULT_RGB_SHIFT_INTENSITY, unit = "px")
