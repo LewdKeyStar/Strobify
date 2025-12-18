@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from collections.abc import Callable
 
-from src.types.Shortenable import Shortenable
+from src.types.abstract.Shortenable import Shortenable
 
 @dataclass
 class FeatureSetting(Shortenable):

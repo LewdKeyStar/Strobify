@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.types.Shortenable import Shortenable
+from src.types.abstract.Shortenable import Shortenable
 from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 from src.types.FeatureParameter import FeatureParameter
 
