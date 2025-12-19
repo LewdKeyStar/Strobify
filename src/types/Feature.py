@@ -9,10 +9,12 @@ from src.decl.filter_settings_list import enable_settings, valid_setting_names
 import src.impl.feature_filters
 from src.impl.misc_filters import (
     split_filter,
-    alpha_filter,
-
+    alpha_filter
+)
+from src.utils.filter_utils import (
     filter_input,
-    filter_output
+    filter_output,
+    filter_option_separator
 )
 
 from src.impl.filter_enable_settings import *
@@ -26,6 +28,8 @@ class Feature(Shortenable):
     parameters: list[FeatureParameter] = field(default_factory=list)
 
     supplemental_arguments: list[str] = field(default_factory=list)
+
+    combine_mode: str = "merge"
 
     @property
     def feature_filter(self):
@@ -92,6 +96,14 @@ class Feature(Shortenable):
     # TODO : maybe we'll generalize this too.
 
     def apply_alpha(self, args, feature_filterstr):
+
+        alpha = self.get_setting_value(args, "alpha")
+
+        # This is a veeeery slight difference in result.
+        # It does make processing faster, though.
+        if alpha == 1.0 and self.combine_mode == "merge":
+            return feature_filterstr + filter_option_separator()
+
         return (
             split_filter(
                 self.filterstr_before_feature,
@@ -101,7 +113,7 @@ class Feature(Shortenable):
             + feature_filterstr
             + filter_output(self.filterstr_to_alpha)
             + alpha_filter(
-                self.get_setting_value(args, "alpha"),
+                alpha,
                 self.filterstr_before_feature,
                 self.filterstr_to_alpha
             )

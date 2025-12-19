@@ -13,11 +13,3 @@ def alpha_filter(alpha, primary_name, to_alpha_name):
         f"[{to_alpha_name}]format=argb,colorchannelmixer=aa={alpha}[alpha];"
         f"[{primary_name}][alpha]overlay=" # On purpose : enable option provided by feature call.
     )
-
-# Okay, this isn't technically a filter, but we don't need a filter_utils file for this.
-
-def filter_input(input_name):
-    return f"[{input_name}]"
-
-def filter_output(output_name):
-    return f"[{output_name}];"

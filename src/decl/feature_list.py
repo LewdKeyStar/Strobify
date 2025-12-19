@@ -70,6 +70,8 @@ features: list[Feature] = [
     Feature(
         name = "zoom",
 
+        combine_mode = "overlay",
+
         default_setting_values = FeatureSettingDefaultValues({
             "alpha": DEFAULT_ZOOM_ALPHA
         }),
@@ -85,6 +87,8 @@ features: list[Feature] = [
 
     Feature(
         name = "frame_randomizer",
+
+        combine_mode = "overlay",
 
         parameters = [
             FeatureParameter("max_frames", special_shorthand = "max", default = DEFAULT_RANDOMIZER_MAX_FRAMES),
