@@ -47,7 +47,22 @@ features: list[Feature] = [
         }),
 
         parameters = [
-            FeatureParameter("intensity", default = DEFAULT_RGB_SHIFT_INTENSITY, unit = "px")
+            FeatureParameter(
+                "axis",
+                special_shorthand = "ax",
+                type = str,
+                default = DEFAULT_RGB_SHIFT_AXIS
+            ),
+            FeatureParameter(
+                "intensity",
+                default = DEFAULT_RGB_SHIFT_INTENSITY,
+                unit = "px"
+            ),
+            FeatureParameter(
+                "colors",
+                type = str,
+                default = DEFAULT_RGB_SHIFT_COLORS
+            )
         ]
     ),
 

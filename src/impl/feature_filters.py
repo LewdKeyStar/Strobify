@@ -1,4 +1,5 @@
 from src.impl.filter_enable_settings import interval_total_length
+from src.constants import VALID_AXES, VALID_COLORS
 
 def strobe_filter(
     strobe_gamma,
@@ -18,7 +19,9 @@ def strobe_filter(
     )
 
 def rgb_shift_filter(
+    shift_axis,
     shift_intensity,
+    shift_colors,
 
     start_shift_at,
     end_shift_at,
@@ -29,7 +32,19 @@ def rgb_shift_filter(
     shift_active,
     should_invert_shift_pause
 ):
-    return f"rgbashift=rh={shift_intensity}:gh={-shift_intensity}"
+    if shift_axis not in VALID_AXES:
+        raise ValueError("Invalid axis :", shift_axis)
+
+    direction = "h" if shift_axis == "x" else "v"
+
+    if shift_colors not in VALID_COLORS:
+        raise ValueError("Invalid colors :", shift_colors)
+
+    return (
+        f"rgbashift="
+        f"{shift_colors[0]}{direction}={shift_intensity}:"
+        f"{shift_colors[1]}{direction}={-shift_intensity}"
+    )
 
 def shake_filter(
     fps,
@@ -52,8 +67,8 @@ def shake_filter(
     should_invert_shake_pause
 ):
 
-    if shake_axis not in ("x", "y"):
-        return ''
+    if shake_axis not in VALID_AXES:
+        raise ValueError("Invalid axis :", shake_axis)
 
     # This single use case is the reason why ALL filters are forced to bear enable conditions.
     # Isn't there a way to solve this??

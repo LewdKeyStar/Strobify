@@ -1,10 +1,15 @@
+VALID_AXES = ["x", "y"]
+VALID_COLORS = ["rg", "rb", "br", "bg", "gr", "gb"]
+
 DEFAULT_OUTPUT = "default" # This is just a placeholder, not an actual filename.
 
 DEFAULT_STROBE_GAMMA = 1.0
 DEFAULT_STROBE_EVERY = 2
 DEFAULT_STROBE_PAUSE = 0
 
+DEFAULT_RGB_SHIFT_AXIS = "x"
 DEFAULT_RGB_SHIFT_INTENSITY = 5
+DEFAULT_RGB_SHIFT_COLORS = "rg"
 DEFAULT_RGB_SHIFT_EVERY = 2
 DEFAULT_RGB_SHIFT_PAUSE = 0
 
