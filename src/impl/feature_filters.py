@@ -29,8 +29,6 @@ def rgb_shift_filter(
     )
 
 def shake_filter(
-    fps,
-
     shake_axis,
 
     shake_amplitude,
@@ -43,6 +41,8 @@ def shake_filter(
 
     shake_pause,
     shake_active,
+
+    fps
 ):
 
     if shake_axis not in VALID_AXES:
@@ -63,12 +63,12 @@ def shake_filter(
     )
 
 def zoom_filter(
-    res,
-    fps,
-
     zoom_factor,
     zoom_center_x,
-    zoom_center_y
+    zoom_center_y,
+
+    res,
+    fps
 ):
     return (
         f"zoompan=s={res}:fps={fps}:"

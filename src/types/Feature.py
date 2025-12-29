@@ -126,11 +126,11 @@ class Feature(Shortenable):
             return ''
 
         feature_filterstr = self.feature_filter(
-            *[getattr(video_info, required_info) for required_info in self.video_info_used_in_filter],
-
             *[self.get_param_value(args, param_name) for param_name in self.parameter_names],
 
-            *[self.get_setting_value(args, setting_name) for setting_name in self.settings_used_in_filter]
+            *[self.get_setting_value(args, setting_name) for setting_name in self.settings_used_in_filter],
+
+            *[getattr(video_info, required_info) for required_info in self.video_info_used_in_filter]
         )
 
         return (
