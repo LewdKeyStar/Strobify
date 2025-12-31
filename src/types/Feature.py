@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from src.types.abstract.Shortenable import Shortenable
 from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 from src.types.FeatureParameter import FeatureParameter
+from src.types.FeatureCombineMode import FeatureCombineMode
 
 from src.decl.filter_settings_list import enable_settings, valid_setting_names
 
@@ -30,7 +31,14 @@ class Feature(Shortenable):
     video_info_used_in_filter: list[str] = field(default_factory=list)
     settings_used_in_filter: list[str] = field(default_factory=list)
 
-    combine_mode: str = "merge"
+    combine_mode: FeatureCombineMode = FeatureCombineMode.MERGE
+
+    def __post_init__(self):
+        if (
+            self.combine_mode == FeatureCombineMode.PRE_MERGED
+            and "alpha" not in self.settings_used_in_filter
+        ):
+            raise ValueError("Pre-merged feature declared without access to alpha")
 
     @property
     def feature_filter(self):
@@ -107,10 +115,14 @@ class Feature(Shortenable):
 
         alpha = self.get_setting_value(args, "alpha")
 
-        # This is a veeeery slight difference in result.
-        # It does make processing faster, though.
-        if alpha == 1.0 and self.combine_mode == "merge":
-            return feature_filterstr + filter_option_separator()
+
+        if (
+            self.combine_mode == FeatureCombineMode.PRE_MERGED
+            or alpha == 1.0 and self.combine_mode == FeatureCombineMode.MERGE
+        ):
+            return feature_filterstr + filter_option_separator(
+                is_first_option = self.combine_mode == FeatureCombineMode.PRE_MERGED
+            )
 
         return (
             split_filter(

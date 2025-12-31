@@ -84,3 +84,30 @@ def frame_randomizer_filter(
         f"random=frames={frame_randomizer_max_frames}:"
         f"seed={frame_randomizer_seed}"
     )
+
+def afterimages_filter(
+    afterimages_amount,
+    afterimages_delay,
+
+    afterimages_alpha
+):
+
+    def amount_range():
+        return range(1, afterimages_amount + 1)
+
+    def overlay_step(i):
+        return (
+            f"overlay_step{i}"
+            if i > 0
+            else "before_afterimages"
+        )
+
+    return (
+        f"split={afterimages_amount+1}[before_afterimages]{''.join([f'[clone{i}]' for i in amount_range()])};"
+        f'''{''.join([
+            f"[clone{i}]tpad=start={i*afterimages_delay}:start_mode=clone[afterimage{i}];"
+            f"[afterimage{i}]format=argb,colorchannelmixer=aa={afterimages_alpha}[afterimage{i}_alpha];"
+            f"[{overlay_step(i-1)}][afterimage{i}_alpha]overlay[{overlay_step(i)}];"
+            for i in amount_range()
+        ])}'''
+    ).removesuffix(f"[{overlay_step(afterimages_amount)}];") # no output name for the last step

@@ -4,5 +4,5 @@ def filter_input(input_name):
 def filter_output(output_name):
     return f"[{output_name}];"
 
-def filter_option_separator():
-    return ":"
+def filter_option_separator(is_first_option):
+    return "=" if is_first_option else ":"

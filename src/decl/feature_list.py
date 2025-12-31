@@ -3,16 +3,38 @@ from src.constants import *
 from src.types.Feature import Feature
 from src.types.FeatureParameter import FeatureParameter
 from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
+from src.types.FeatureCombineMode import FeatureCombineMode
 
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,
 # It will automatically become available.
 
 features: list[Feature] = [
+
+    Feature(
+        name = "afterimages",
+
+        special_shorthand = "afi",
+
+        combine_mode = FeatureCombineMode.PRE_MERGED,
+
+        default_setting_values = FeatureSettingDefaultValues({
+            "alpha": DEFAULT_AFTERIMAGES_ALPHA
+        }),
+
+        parameters = (
+            FeatureParameter("amount", special_shorthand = "m", default = DEFAULT_AFTERIMAGES_AMOUNT),
+            FeatureParameter("delay", default = DEFAULT_AFTERIMAGES_DELAY)
+        ),
+
+        settings_used_in_filter = ["alpha"]
+
+    ),
+
     Feature(
         name = "frame_randomizer",
 
-        combine_mode = "overlay",
+        combine_mode = FeatureCombineMode.OVERLAY,
 
         parameters = [
             FeatureParameter("max_frames", special_shorthand = "max", default = DEFAULT_RANDOMIZER_MAX_FRAMES),
@@ -101,7 +123,7 @@ features: list[Feature] = [
     Feature(
         name = "zoom",
 
-        combine_mode = "overlay",
+        combine_mode = FeatureCombineMode.OVERLAY,
 
         default_setting_values = FeatureSettingDefaultValues({
             "alpha": DEFAULT_ZOOM_ALPHA
