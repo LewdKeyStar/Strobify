@@ -1,5 +1,5 @@
 from src.impl.filter_enable_settings import interval_total_length
-from src.constants import VALID_AXES, VALID_COLORS
+from src.constants import VALID_AXES, VALID_COLORS, TRANSPARENT_FFMPEG_COLOR
 
 def strobe_filter(
     strobe_gamma
@@ -105,7 +105,7 @@ def afterimages_filter(
     return (
         f"split={afterimages_amount+1}[before_afterimages]{''.join([f'[clone{i}]' for i in amount_range()])};"
         f'''{''.join([
-            f"[clone{i}]tpad=start={i*afterimages_delay}:start_mode=clone[afterimage{i}];"
+            f"[clone{i}]tpad=start={i*afterimages_delay}:color={TRANSPARENT_FFMPEG_COLOR}[afterimage{i}];"
             f"[afterimage{i}]format=argb,colorchannelmixer=aa={afterimages_alpha}[afterimage{i}_alpha];"
             f"[{overlay_step(i-1)}][afterimage{i}_alpha]overlay[{overlay_step(i)}];"
             for i in amount_range()
