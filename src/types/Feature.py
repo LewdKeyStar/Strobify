@@ -40,6 +40,9 @@ class Feature(Shortenable):
         ):
             raise ValueError("Pre-merged feature declared without access to alpha")
 
+    def is_enabled(self, args):
+        return getattr(args, self.name)
+
     @property
     def feature_filter(self):
         return getattr(src.impl.feature_filters, f"{self.name}_filter")
@@ -141,7 +144,7 @@ class Feature(Shortenable):
 
     def __call__(self, args, video_info):
 
-        if not getattr(args, self.name):
+        if not self.is_enabled(args):
             return ''
 
         feature_filterstr = self.feature_filter(
