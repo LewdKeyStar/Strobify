@@ -7,12 +7,13 @@ from src.decl.feature_list import features, prioritized_features
 from src.impl.misc_filters import palette_filter
 
 from src.utils.parser_utils import register_feature
+from src.utils.filter_utils import chain_filters
 
 from src.utils.name_utils import is_gif, to_output_name
 from src.constants import DEFAULT_OUTPUT
 
-def appropriate_filters(args, *, video_info):
-    
+def appropriate_filters(args, video_info):
+
     all_filters = [
         *[
             feature_filter(
@@ -25,9 +26,25 @@ def appropriate_filters(args, *, video_info):
         palette_filter() if is_gif(args.output) else ""
     ]
 
-    return ",".join([
-        filter for filter in all_filters if filter != ""
-    ])
+    return chain_filters(all_filters)
+
+def appropriate_filter_audio_components(args, video_info):
+
+    all_audio_components = [
+
+        feature_filter(
+            args,
+            video_info,
+            seeking_audio_component = True
+        )
+
+        for feature_filter in prioritized_features(args)
+    ]
+
+    return chain_filters(all_audio_components)
+
+def any_audio_filters_enabled(args):
+    return any(feature.has_audio_component and feature.is_enabled(args) for feature in features)
 
 def main():
     parser = ArgumentParser()
@@ -48,17 +65,31 @@ def main():
         if args.output == DEFAULT_OUTPUT \
         else args.output
 
+    video_info = VideoInfo(args.input)
+
     ff = FFmpeg(
         global_options = "-y",
         inputs = {args.input: None},
-        outputs = {args.output: [
-            "-c:a", "copy", # this cannot be done for video, so transcoding WILL occur
-            # because there is no way for ffmpeg to reference the input codec in the filter chain...
-            "-vf", appropriate_filters(
-                args,
-                video_info = VideoInfo(args.input)
+        outputs = {args.output: (
+            (
+                [
+                "-vf", appropriate_filters(
+                    args,
+                    video_info
+                )]
             )
-        ]}
+            +
+            (
+                [
+                    "-af", appropriate_filter_audio_components(
+                        args,
+                        video_info
+                    )
+                ]
+                if any_audio_filters_enabled(args)
+                else []
+            )
+        )}
     )
 
     print(ff.cmd)

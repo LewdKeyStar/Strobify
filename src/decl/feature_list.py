@@ -12,6 +12,21 @@ from src.types.FeatureCombineMode import FeatureCombineMode
 features: list[Feature] = [
 
     Feature(
+        name = "speed_change",
+
+        has_audio_component = True,
+
+        can_receive_enable_settings = False,
+        can_receive_video_settings = False,
+
+        combine_mode = FeatureCombineMode.REPLACE,
+
+        parameters = (
+            FeatureParameter("factor", type = float, default = DEFAULT_SPEED_CHANGE_FACTOR),
+        )
+    ),
+
+    Feature(
         name = "afterimages",
 
         special_shorthand = "afi",

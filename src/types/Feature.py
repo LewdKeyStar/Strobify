@@ -23,7 +23,13 @@ from src.impl.filter_enable_settings import *
 @dataclass
 class Feature(Shortenable):
     name: str
+
     enable_default: bool = False
+
+    has_audio_component: bool = False
+
+    can_receive_enable_settings: bool = True
+    can_receive_video_settings: bool = True
 
     default_setting_values: FeatureSettingDefaultValues = FeatureSettingDefaultValues()
     parameters: list[FeatureParameter] = field(default_factory=list)
@@ -34,6 +40,19 @@ class Feature(Shortenable):
     combine_mode: FeatureCombineMode = FeatureCombineMode.MERGE
 
     def __post_init__(self):
+        if (
+            self.can_receive_video_settings == True
+            and self.combine_mode == FeatureCombineMode.REPLACE
+        ):
+            raise ValueError("Replace-type feature declared with alpha parameter")
+
+        if(
+            self.can_receive_video_settings == False
+            and self.combine_mode != FeatureCombineMode.REPLACE
+
+        ):
+            raise ValueError("Non-replace-type feature declared without alpha parameter")
+
         if (
             self.combine_mode == FeatureCombineMode.PRE_MERGED
             and "alpha" not in self.settings_used_in_filter
@@ -46,6 +65,10 @@ class Feature(Shortenable):
     @property
     def feature_filter(self):
         return getattr(src.impl.feature_filters, f"{self.name}_filter")
+
+    @property
+    def feature_filter_audio_component(self):
+        return getattr(src.impl.feature_filters, f"{self.name}_filter_audio_component")
 
     @property
     def parameter_names(self):
@@ -87,7 +110,26 @@ class Feature(Shortenable):
     def filterstr_to_alpha(self):
         return f"{self.name}_to_alpha"
 
-    def enable_conditions(self, args, video_info):
+    def feature_filterstr(self, args, video_info, audio = False):
+
+        component_function = (
+            self.feature_filter
+            if not audio
+            else self.feature_filter_audio_component
+        )
+
+        return component_function(
+            *[self.get_param_value(args, param_name) for param_name in self.parameter_names],
+
+            *[self.get_setting_value(args, setting_name) for setting_name in self.settings_used_in_filter],
+
+            *[getattr(video_info, required_info) for required_info in self.video_info_used_in_filter]
+        )
+
+    def apply_enable_settings(self, args, video_info):
+        if not self.can_receive_enable_settings:
+            return ''
+
         return (
             f'''enable={join_and(
                 enable_from(self.get_setting_value(args, "start_at")),
@@ -112,20 +154,29 @@ class Feature(Shortenable):
             )}'''
         )
 
-    # TODO : maybe we'll generalize this too.
+    def should_skip_alpha(self, args):
 
-    def apply_alpha(self, args, feature_filterstr):
+        return (
+            self.combine_mode in (FeatureCombineMode.REPLACE, FeatureCombineMode.PRE_MERGED)
+            or
+            self.combine_mode == FeatureCombineMode.MERGE and self.get_setting_value(args, "alpha") == 1.0
+        )
 
-        alpha = self.get_setting_value(args, "alpha")
-
-
-        if (
-            self.combine_mode == FeatureCombineMode.PRE_MERGED
-            or alpha == 1.0 and self.combine_mode == FeatureCombineMode.MERGE
-        ):
-            return feature_filterstr + filter_option_separator(
+    def feature_filterstr_without_alpha(self, args, video_info):
+        return (
+            self.feature_filterstr(
+                args,
+                video_info
+            )
+            +
+            filter_option_separator(
                 is_first_option = self.combine_mode == FeatureCombineMode.PRE_MERGED
             )
+        )
+
+    def feature_filterstr_with_alpha(self, args, video_info):
+
+        alpha = self.get_setting_value(args, "alpha")
 
         return (
             split_filter(
@@ -133,7 +184,7 @@ class Feature(Shortenable):
                 self.filterstr_before_alpha
             )
             + filter_input(self.filterstr_before_alpha)
-            + feature_filterstr
+            + self.feature_filterstr(args, video_info)
             + filter_output(self.filterstr_to_alpha)
             + alpha_filter(
                 alpha,
@@ -142,27 +193,44 @@ class Feature(Shortenable):
             )
         )
 
-    def __call__(self, args, video_info):
+    def video_component(self, args, video_info):
+
+        return (
+            (
+                self.feature_filterstr_with_alpha(
+                    args,
+                    video_info
+                )
+                if not self.should_skip_alpha(args)
+                else self.feature_filterstr_without_alpha(
+                    args,
+                    video_info
+                )
+            )
+            +
+            (
+                self.apply_enable_settings(
+                    args,
+                    video_info
+                )
+                if self.can_receive_enable_settings
+                else ''
+            )
+        )
+
+    def audio_component(self, args, video_info):
+        if not self.has_audio_component:
+            return ''
+
+        return self.feature_filterstr(args, video_info, audio = True)
+
+    def __call__(self, args, video_info, seeking_audio_component = False):
 
         if not self.is_enabled(args):
             return ''
 
-        feature_filterstr = self.feature_filter(
-            *[self.get_param_value(args, param_name) for param_name in self.parameter_names],
-
-            *[self.get_setting_value(args, setting_name) for setting_name in self.settings_used_in_filter],
-
-            *[getattr(video_info, required_info) for required_info in self.video_info_used_in_filter]
-        )
-
         return (
-            self.apply_alpha(
-                args,
-                feature_filterstr
-            )
-            +
-            self.enable_conditions(
-                args,
-                video_info
-            )
+            self.video_component(args, video_info)
+            if not seeking_audio_component
+            else self.audio_component(args, video_info)
         )

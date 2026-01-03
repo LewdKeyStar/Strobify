@@ -1,6 +1,6 @@
 from src.types.Feature import Feature
 from src.decl.feature_list import prioritized_features
-from src.decl.filter_settings_list import settings
+from src.decl.filter_settings_list import enable_settings, video_settings
 
 from os.path import splitext
 from re import sub
@@ -33,7 +33,16 @@ def feature_section(
     return "_".join([
         f"{feature.name}",
         print_feature_params(),
-        *[conditional_setting(setting) for setting in settings]
+        *(
+            [conditional_setting(enable_setting) for enable_setting in enable_settings]
+            if feature.can_receive_enable_settings
+            else []
+        ),
+        *(
+            [conditional_setting(video_setting) for video_setting in video_settings]
+            if feature.can_receive_video_settings
+            else []
+        )
     ])
 
 def to_output_name(args):

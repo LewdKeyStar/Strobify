@@ -111,3 +111,28 @@ def afterimages_filter(
             for i in amount_range()
         ])}'''
     ).removesuffix(f"[{overlay_step(afterimages_amount)}];") # no output name for the last step
+
+def speed_change_filter(
+    speed_change_factor
+):
+
+    return (
+        f"setpts={1/speed_change_factor}*PTS"
+    )
+
+def speed_change_filter_audio_component(
+    speed_change_factor
+):
+
+    return (
+        f"rubberband=tempo={speed_change_factor}:"
+        f"pitch={speed_change_factor}:"
+        f"transients=mixed:"
+        f"detector=percussive:"
+        f"phase=independent:"
+        f"window=short:"
+        f"smoothing=on:"
+        f"formant=shifted:"
+        f"pitchq=quality:"
+        f"channels=together"
+    )
