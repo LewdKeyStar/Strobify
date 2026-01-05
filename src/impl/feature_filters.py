@@ -113,7 +113,9 @@ def afterimages_filter(
     ).removesuffix(f"[{overlay_step(afterimages_amount)}];") # no output name for the last step
 
 def speed_change_filter(
-    speed_change_factor
+    speed_change_factor,
+    speed_change_preserve_pitch,
+    speed_change_preserve_formants
 ):
 
     return (
@@ -121,18 +123,20 @@ def speed_change_filter(
     )
 
 def speed_change_filter_audio_component(
-    speed_change_factor
+    speed_change_factor,
+    speed_change_preserve_pitch,
+    speed_change_preserve_formants
 ):
 
     return (
         f"rubberband=tempo={speed_change_factor}:"
-        f"pitch={speed_change_factor}:"
+        f"pitch={speed_change_factor if not speed_change_preserve_pitch else 1}:"
         f"transients=mixed:"
         f"detector=percussive:"
         f"phase=independent:"
         f"window=short:"
         f"smoothing=on:"
-        f"formant=shifted:"
+        f"formant={'shifted' if not speed_change_preserve_formants else 'preserved'}:"
         f"pitchq=quality:"
         f"channels=together"
     )

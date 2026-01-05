@@ -23,6 +23,8 @@ features: list[Feature] = [
 
         parameters = (
             FeatureParameter("factor", type = float, default = DEFAULT_SPEED_CHANGE_FACTOR),
+            FeatureParameter("preserve_pitch", type = bool, default = DEFAULT_SPEED_CHANGE_PRESERVE_PITCH),
+            FeatureParameter("preserve_formants", type = bool, default = DEFAULT_SPEED_CHANGE_PRESERVE_FORMANTS)
         )
     ),
 

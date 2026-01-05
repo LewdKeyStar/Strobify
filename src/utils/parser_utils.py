@@ -6,30 +6,29 @@ from src.types.Feature import Feature
 
 from src.utils.text_utils import to_kebab, abbreviate
 
-def register_feature_setting(
-    parser,
-    feature,
-    setting
-):
-    # This has to be preemptively declared.
-    # The double star seemingly doesn't work on a multiline parenthesized literal.
-
-    type_dependant_parser_arguments = (
+def parser_compatible_type(setting_or_param):
+    return (
         {
-            "type": setting.type,
+            "type": setting_or_param.type,
             "nargs": "?"
         }
-        if setting.type != bool
+        if setting_or_param.type != bool
         else {
             "action": BooleanOptionalAction
         }
     )
 
+def register_feature_setting(
+    parser,
+    feature,
+    setting
+):
+
     parser.add_argument(
         f"-{feature.shorthand}{setting.shorthand}",
         f"--{to_kebab(feature.name)}-{to_kebab(setting.name)}",
 
-        **type_dependant_parser_arguments,
+        **parser_compatible_type(setting),
 
         # I don't like this default override scheme,
         # I don't like that the Feature has to return None
@@ -80,10 +79,11 @@ def register_feature(
 
     for param in feature.parameters:
 
+        # TODO : this could/should be unified with register_feature_setting()
+
         parser.add_argument(
             f"-{feature.shorthand}{param.shorthand}",
             f"--{to_kebab(feature.name)}-{to_kebab(param.name)}",
-            type = param.type,
-            nargs = "?",
+            **parser_compatible_type(param),
             default = param.default
         )
