@@ -15,13 +15,8 @@ def rgb_shift_filter(
     shift_intensity,
     shift_colors
 ):
-    if shift_axis not in VALID_AXES:
-        raise ValueError("Invalid axis :", shift_axis)
 
     direction = "h" if shift_axis == "x" else "v"
-
-    if shift_colors not in VALID_COLORS:
-        raise ValueError("Invalid colors :", shift_colors)
 
     return (
         f"rgbashift="
@@ -46,11 +41,6 @@ def shake_filter(
     fps
 ):
 
-    if shake_axis not in VALID_AXES:
-        raise ValueError("Invalid axis :", shake_axis)
-
-    # This single use case is the reason why ALL filters are forced to bear enable conditions.
-    # Isn't there a way to solve this??
     def t_modulo_interval():
         return f'mod(t-{start_shake_at/fps},{interval_total_length(shake_pause, shake_active)/fps})'
 

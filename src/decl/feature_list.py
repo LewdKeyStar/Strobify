@@ -1,10 +1,14 @@
 from src.constants import *
 
 from src.types.Feature import Feature
+
+from src.types.FeatureCombineMode import FeatureCombineMode
+
 from src.types.FeatureParameter import FeatureParameter
 from src.types.FeatureParameterRange import FeatureParameterRange
+from src.types.FeatureParameterChoices import FeatureParameterChoices
+
 from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
-from src.types.FeatureCombineMode import FeatureCombineMode
 
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,
@@ -87,6 +91,7 @@ features: list[Feature] = [
                 "axis",
                 special_shorthand = "ax",
                 type = str,
+                choices = FeatureParameterChoices(VALID_AXES),
                 default = DEFAULT_RGB_SHIFT_AXIS
             ),
             FeatureParameter(
@@ -97,6 +102,7 @@ features: list[Feature] = [
             FeatureParameter(
                 "colors",
                 type = str,
+                choices = FeatureParameterChoices(VALID_COLORS),
                 default = DEFAULT_RGB_SHIFT_COLORS
             )
         ]
@@ -112,6 +118,7 @@ features: list[Feature] = [
                 "axis",
                 special_shorthand = "ax",
                 type = str,
+                choices = FeatureParameterChoices(VALID_AXES),
                 default = DEFAULT_SHAKE_AXIS
             ),
             FeatureParameter(

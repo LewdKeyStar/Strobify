@@ -85,6 +85,7 @@ def register_feature(
             f"-{feature.shorthand}{param.shorthand}",
             f"--{to_kebab(feature.name)}-{to_kebab(param.name)}",
             **parser_compatible_type(param),
+            choices = param.choices,
             default = param.default,
             help = param.help
         )
