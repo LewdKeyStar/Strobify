@@ -1,3 +1,6 @@
+def yuva420p_format_filter():
+    return "format=yuva420p"
+
 # For GIF management ;
 # Without a separate palette for each GIF frame, noticeable quantization noise appears.
 # The optimized thing to do would be to have two palettes : one for the normal frames, one for the inverted

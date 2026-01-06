@@ -1,5 +1,6 @@
 from src.impl.filter_enable_settings import interval_total_length
 from src.constants import VALID_AXES, VALID_COLORS, TRANSPARENT_FFMPEG_COLOR
+from src.impl.misc_filters import yuva420p_format_filter
 
 def strobe_filter(
     strobe_gamma
@@ -86,6 +87,8 @@ def frame_randomizer_filter(
     )
 
 def afterimages_filter(
+    afterimages_start_white,
+
     afterimages_amount,
     afterimages_delay,
 
@@ -99,18 +102,39 @@ def afterimages_filter(
         return (
             f"overlay_step{i}"
             if i > 0
-            else "before_afterimages"
+            else "before_afterimages_pre"
+        )
+
+    # If the individual afterimage overlays are enabled during their tpad interval (while they're transparent-white)
+    # And the format isn't changed to a compatible one like yuva420p,
+    # It results in a "fade in from white" effect.
+    # This is undesirable in most cases, but can be neat sometimes, which is why it's an option.
+
+    def pre_format():
+        return (
+            f"{yuva420p_format_filter()},"
+            if not afterimages_start_white
+            else ''
+        )
+
+    def hide_when_white(i):
+        return (
+            f"=enable='gte(n, {i*afterimages_delay})'"
+            if not afterimages_start_white
+            else ''
         )
 
     return (
-        f"split={afterimages_amount+1}[before_afterimages]{''.join([f'[clone{i}]' for i in amount_range()])};"
+        f"{pre_format()}"
+        f"split={afterimages_amount+2}[before_afterimages_pre][before_afterimages_post]{''.join([f'[clone{i}]' for i in amount_range()])};"
         f'''{''.join([
             f"[clone{i}]tpad=start={i*afterimages_delay}:color={TRANSPARENT_FFMPEG_COLOR}[afterimage{i}];"
             f"[afterimage{i}]format=argb,colorchannelmixer=aa={afterimages_alpha}[afterimage{i}_alpha];"
-            f"[{overlay_step(i-1)}][afterimage{i}_alpha]overlay[{overlay_step(i)}];"
+            f"[{overlay_step(i-1)}][afterimage{i}_alpha]overlay{hide_when_white(i)}[{overlay_step(i)}];"
             for i in amount_range()
         ])}'''
-    ).removesuffix(f"[{overlay_step(afterimages_amount)}];") # no output name for the last step
+        f"[before_afterimages_post][{overlay_step(afterimages_amount)}]overlay"
+    )
 
 def speed_change_filter(
     speed_change_factor,

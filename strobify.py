@@ -15,6 +15,7 @@ from src.constants import DEFAULT_OUTPUT
 def appropriate_filters(args, video_info):
 
     all_filters = [
+
         *[
             feature_filter(
                 args,
