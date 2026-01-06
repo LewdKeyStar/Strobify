@@ -21,6 +21,14 @@ class FeatureParameter(Shortenable):
 
     desc: str = ""
 
+    # FIXME : those line breaks are not preserved in the help message.
+    # This is probably due to the built-in formatter.
+
     @property
     def help(self):
-        return f"{self.desc} {self.range} {self.choices if self.choices is not None else ''}"
+        return f'''
+        {self.desc}
+        Type : {str(self.type.__name__)}
+        {self.range}
+        {self.choices if self.choices is not None else ''}
+        '''
