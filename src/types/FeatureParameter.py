@@ -17,7 +17,7 @@ class FeatureParameter(Shortenable):
     # Normally, choices and a range should not coexist...but who knows.
 
     choices: FeatureParameterChoices = None # ...and not an empty set of choices, otherwise argparse will accept no values.
-    range: FeatureParameterRange = FeatureParameterRange()
+    range: FeatureParameterRange = None # ...so that if a range is instantiated, it will always mean something.
 
     desc: str = ""
 
@@ -29,6 +29,6 @@ class FeatureParameter(Shortenable):
         return f'''
         {self.desc}
         Type : {str(self.type.__name__)}
-        {self.range}
-        {self.choices if self.choices is not None else ''}
+        {f'Range : {self.range}' if self.range is not None else ''}
+        {f'Possible choices : {self.choices}' if self.choices is not None else ''}
         '''

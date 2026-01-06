@@ -74,6 +74,24 @@ class Feature(Shortenable):
     def parameter_names(self):
         return [param.name for param in self.parameters]
 
+    def get_param_value(self, args, param_name):
+        if param_name not in self.parameter_names:
+            raise ValueError("Invalid parameter :", param_name)
+
+        return getattr(args, f"{self.name}_{param_name}")
+
+    def check_param_value_ranges(self, args):
+        for param in self.parameters:
+            if (
+                param.range is not None
+                and self.get_param_value(args, param.name) not in param.range
+            ):
+                raise ValueError((
+                    f"Parameter value out of range : "
+                    f"{self.name}_{param.name} with value {self.get_param_value(args, param.name)}"
+                    f" is not in range {param.range}"
+                ))
+
     def default_setting_value(self, setting_name):
         return (
             self.default_setting_values[setting_name]
@@ -81,12 +99,6 @@ class Feature(Shortenable):
             else None # Ouch! I don't like this!
             # But the alternative is to run a find() on the settings list...
         )
-
-    def get_param_value(self, args, param_name):
-        if param_name not in self.parameter_names:
-            raise ValueError("Invalid parameter :", param_name)
-
-        return getattr(args, f"{self.name}_{param_name}")
 
     def get_setting_value(self, args, setting_name):
         if setting_name not in valid_setting_names:
@@ -228,6 +240,8 @@ class Feature(Shortenable):
 
         if not self.is_enabled(args):
             return ''
+
+        self.check_param_value_ranges(args)
 
         return (
             self.video_component(args, video_info)

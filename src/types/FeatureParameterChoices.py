@@ -20,7 +20,6 @@ class FeatureParameterChoices:
     def __repr__(self):
         return (
             (
-                "Possible choices : "
                 '{'
                 f"{', '.join(self)}"
                 '}'
