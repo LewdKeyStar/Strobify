@@ -1,6 +1,6 @@
 from src.impl.filter_enable_settings import interval_total_length
 from src.constants import VALID_AXES, VALID_COLORS, TRANSPARENT_FFMPEG_COLOR
-from src.impl.misc_filters import yuva420p_format_filter
+from src.impl.misc_filters import yuva420p_format_filter, eq_filter
 
 def invert_filter(
     invert_gamma
@@ -153,4 +153,46 @@ def speed_change_filter_audio_component(
         f"formant={'shifted' if not speed_change_preserve_formants else 'preserved'}:"
         f"pitchq=quality:"
         f"channels=together"
+    )
+
+def darken_filter(
+    darken_contrast,
+    darken_brightness,
+    darken_saturation,
+    darken_gamma,
+    darken_gamma_r,
+    darken_gamma_g,
+    darken_gamma_b,
+    darken_gamma_weight
+):
+    return eq_filter(
+        darken_contrast,
+        darken_brightness,
+        darken_saturation,
+        darken_gamma,
+        darken_gamma_r,
+        darken_gamma_g,
+        darken_gamma_b,
+        darken_gamma_weight
+    )
+
+def lighten_filter(
+    lighten_contrast,
+    lighten_brightness,
+    lighten_saturation,
+    lighten_gamma,
+    lighten_gamma_r,
+    lighten_gamma_g,
+    lighten_gamma_b,
+    lighten_gamma_weight
+):
+    return eq_filter(
+        lighten_contrast,
+        lighten_brightness,
+        lighten_saturation,
+        lighten_gamma,
+        lighten_gamma_r,
+        lighten_gamma_g,
+        lighten_gamma_b,
+        lighten_gamma_weight
     )

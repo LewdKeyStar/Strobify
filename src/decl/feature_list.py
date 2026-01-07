@@ -1,4 +1,5 @@
 from src.constants import *
+import src.constants
 
 from src.types.Feature import Feature
 
@@ -13,6 +14,34 @@ from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,
 # It will automatically become available.
+
+def eq_filter_parameters(suffix):
+
+    param_name_list = [
+        "contrast",
+        "brightness",
+        "saturation",
+        "gamma",
+        "gamma_r",
+        "gamma_g",
+        "gamma_b",
+        "gamma_weight"
+    ]
+
+    return [
+        FeatureParameter(
+            name,
+            special_shorthand = "sat" if name == "saturation" else None, # avoid conflict with start_at
+            type = float,
+            range = FeatureParameterRange(
+                getattr(src.constants, f"MIN_EQ_{name.upper()}_{suffix}"),
+                getattr(src.constants, f"MAX_EQ_{name.upper()}_{suffix}")
+            ),
+            default = getattr(src.constants, f"DEFAULT_EQ_{name.upper()}_{suffix}")
+        )
+
+        for name in param_name_list
+    ]
 
 features: list[Feature] = [
 
@@ -76,6 +105,18 @@ features: list[Feature] = [
         parameters = [
             FeatureParameter("gamma", type = float, default = DEFAULT_INVERT_GAMMA)
         ]
+    ),
+
+    Feature(
+        name = "darken",
+
+        parameters = eq_filter_parameters("DARKEN")
+    ),
+
+    Feature(
+        name = "lighten",
+
+        parameters = eq_filter_parameters("LIGHTEN")
     ),
 
     Feature(
@@ -153,9 +194,9 @@ features: list[Feature] = [
         parameters = [
             FeatureParameter(
                 "factor",
-                default = DEFAULT_ZOOM_FACTOR,
                 type = float,
-                range = FeatureParameterRange(1.0, 10.0)
+                range = FeatureParameterRange(MIN_ZOOM_FACTOR, MAX_ZOOM_FACTOR),
+                default = DEFAULT_ZOOM_FACTOR,
             ),
             FeatureParameter("center_x", special_shorthand = "x", unit = "px"),
             FeatureParameter("center_y", special_shorthand = "y", unit = "px")
