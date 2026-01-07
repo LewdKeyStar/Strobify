@@ -224,8 +224,18 @@ features: list[Feature] = [
                 range = FeatureParameterRange(MIN_ZOOM_FACTOR, MAX_ZOOM_FACTOR),
                 default = DEFAULT_ZOOM_FACTOR,
             ),
-            FeatureParameter("center_x", special_shorthand = "x", unit = "px"),
-            FeatureParameter("center_y", special_shorthand = "y", unit = "px")
+            FeatureParameter(
+                "center_x",
+                special_shorthand = "x",
+                unit = "px",
+                default = DEFAULT_ZOOM_CENTER_X
+            ),
+            FeatureParameter(
+                "center_y",
+                special_shorthand = "y",
+                unit = "px",
+                default = DEFAULT_ZOOM_CENTER_Y
+            )
         ],
 
         video_info_used_in_filter = ["resolution", "fps"]

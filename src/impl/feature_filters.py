@@ -1,6 +1,15 @@
 from src.impl.filter_enable_settings import interval_total_length
-from src.constants import VALID_AXES, VALID_COLORS, TRANSPARENT_FFMPEG_COLOR
-from src.impl.misc_filters import yuva420p_format_filter, eq_filter
+
+from src.constants import (
+    DEFAULT_ZOOM_CENTER_X, DEFAULT_ZOOM_CENTER_Y,
+    VALID_AXES, VALID_COLORS,
+    TRANSPARENT_FFMPEG_COLOR
+)
+
+from src.impl.misc_filters import (
+    yuva420p_format_filter,
+    eq_filter
+)
 
 def invert_filter(
     invert_gamma
@@ -61,6 +70,13 @@ def zoom_filter(
     res,
     fps
 ):
+
+    if zoom_center_x == DEFAULT_ZOOM_CENTER_X:
+        zoom_center_x = "(iw / 2)"
+
+    if zoom_center_y == DEFAULT_ZOOM_CENTER_Y:
+        zoom_center_y = "(ih / 2)"
+
     return (
         f"zoompan=s={res}:fps={fps}:"
         f"z={zoom_factor}:d=1:"
