@@ -1,17 +1,13 @@
 from dataclasses import dataclass
+from typing import Union
 
 @dataclass(repr = False)
 class FeatureParameterRange:
 
-    # This would be int | float...but Python's builtin type annotations don't do unions :)))
-    # Even TypeScript has them...
+    min: Union[int, float] = 0
+    max: Union[int, float] = 0
 
-    min: any = 0
-    max: any = 0
-
-    # ...so now, since we can't test if these are numbers,
-    # We have to test if they can be compared...
-    # Look at this fucking clownery.
+    # ...it's still better to check though.
 
     def __post_init__(self):
         if (
