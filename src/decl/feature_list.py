@@ -120,6 +120,32 @@ features: list[Feature] = [
     ),
 
     Feature(
+        name = "hue_saturation",
+
+        parameters = [
+            FeatureParameter(
+                "hue",
+                type = float,
+                range = FeatureParameterRange(MIN_HUE_SATURATION_HUE, MAX_HUE_SATURATION_HUE)
+            ),
+
+            FeatureParameter(
+                "saturation",
+                special_shorthand = "sat",
+                type = float,
+                range = FeatureParameterRange(MIN_HUE_SATURATION_SATURATION, MAX_HUE_SATURATION_SATURATION),
+                default = DEFAULT_HUE_SATURATION_SATURATION
+            ),
+
+            FeatureParameter(
+                "brightness",
+                type = float,
+                range = FeatureParameterRange(MIN_HUE_SATURATION_BRIGHTNESS, MAX_HUE_SATURATION_BRIGHTNESS),
+            )
+        ]
+    ),
+
+    Feature(
         name = "rgb_shift",
 
         default_setting_values = FeatureSettingDefaultValues({

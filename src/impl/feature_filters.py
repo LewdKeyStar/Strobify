@@ -196,3 +196,16 @@ def lighten_filter(
         lighten_gamma_b,
         lighten_gamma_weight
     )
+
+def hue_saturation_filter(
+    hue_saturation_hue,
+    hue_saturation_saturation,
+    hue_saturation_brightness
+):
+
+    return (
+        f"hue="
+        f"h={hue_saturation_hue}:"
+        f"s={hue_saturation_saturation}:"
+        f"b={hue_saturation_brightness}"
+    )
