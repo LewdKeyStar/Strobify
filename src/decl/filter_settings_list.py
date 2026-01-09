@@ -1,43 +1,44 @@
 from src.constants import UINT32_MAX
 
-from src.types.FeatureSetting import FeatureSetting
+from src.types.settings.FeatureEnableSetting import FeatureEnableSetting
+from src.types.settings.FeatureVideoSetting import FeatureVideoSetting
 
 # A declarative list of filter enable settings,
 # And the respective conditions for which they are considered "active".
 # For use in output naming and reflective feature calls.
 
-enable_settings: list[FeatureSetting] = [
-    FeatureSetting(
+enable_settings: list[FeatureEnableSetting] = [
+    FeatureEnableSetting(
         name = "start_at",
         active_condition = lambda x: x > 0,
         special_shorthand = "s"
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "end_at",
         active_condition = lambda x: x < UINT32_MAX,
         special_shorthand = "e",
         default = UINT32_MAX
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "every",
         active_condition = lambda x: x > 1,
         special_shorthand = "n",
         default = 1
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "pause",
         active_condition = lambda x: x > 0
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "active",
         active_condition = lambda x: x > 0
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "invert_pause",
         type = bool,
         active_condition = lambda x: x,
@@ -54,23 +55,24 @@ enable_settings: list[FeatureSetting] = [
     # fascinate [pause-mode [-p -a] | bpm-mode [-bpm -bap]]
     # which is not feasible since the same "subcommand" could be invoked multiple times, one for each filter...
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "bpm",
         special_shorthand = "bpm",
         type = float,
         active_condition = lambda x: x > 0
     ),
 
-    FeatureSetting(
+    FeatureEnableSetting(
         name = "bpm_active_percent",
         type = float,
         active_condition = lambda x: x > 0
     )
 ]
 
-video_settings: list[FeatureSetting] = [
-    FeatureSetting(
+video_settings: list[FeatureVideoSetting] = [
+    FeatureVideoSetting(
         name = "alpha",
+        requires_formatting = True,
         type = float,
         special_shorthand = "l",
         default = 1.0

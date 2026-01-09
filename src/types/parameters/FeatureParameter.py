@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from src.types.abstract.Shortenable import Shortenable
-from src.types.FeatureParameterRange import FeatureParameterRange
-from src.types.FeatureParameterChoices import FeatureParameterChoices
+from src.types.parameters.FeatureParameterRange import FeatureParameterRange
+from src.types.parameters.FeatureParameterChoices import FeatureParameterChoices
 
 # This is a class for feature-specific parameters, which are unique to this feature,
 # As opposed to FeatureSetting.

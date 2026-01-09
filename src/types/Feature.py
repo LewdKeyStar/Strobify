@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
 from src.types.abstract.Shortenable import Shortenable
-from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
-from src.types.FeatureParameter import FeatureParameter
+from src.types.settings.FeatureSettingDefaultValues import FeatureSettingDefaultValues
+from src.types.parameters.FeatureParameter import FeatureParameter
 from src.types.FeatureCombineMode import FeatureCombineMode
 
 from src.decl.filter_settings_list import enable_settings, valid_setting_names

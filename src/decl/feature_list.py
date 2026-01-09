@@ -5,11 +5,11 @@ from src.types.Feature import Feature
 
 from src.types.FeatureCombineMode import FeatureCombineMode
 
-from src.types.FeatureParameter import FeatureParameter
-from src.types.FeatureParameterRange import FeatureParameterRange
-from src.types.FeatureParameterChoices import FeatureParameterChoices
+from src.types.parameters.FeatureParameter import FeatureParameter
+from src.types.parameters.FeatureParameterRange import FeatureParameterRange
+from src.types.parameters.FeatureParameterChoices import FeatureParameterChoices
 
-from src.types.FeatureSettingDefaultValues import FeatureSettingDefaultValues
+from src.types.settings.FeatureSettingDefaultValues import FeatureSettingDefaultValues
 
 # A declarative list of features for the script.
 # Once a feature is declared here and implemented as its filter function,
