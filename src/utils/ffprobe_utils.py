@@ -35,3 +35,6 @@ def get_fps(input):
     num, den = fps_fraction.split("/")
 
     return int(num) / int(den)
+
+def get_duration(input):
+    return round(float(ffprobe_get(input, "duration")) * get_fps(input) )
