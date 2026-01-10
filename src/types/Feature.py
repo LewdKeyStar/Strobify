@@ -6,6 +6,7 @@ from src.types.parameters.FeatureParameter import FeatureParameter
 from src.types.FeatureCombineMode import FeatureCombineMode
 
 from src.decl.filter_settings_list import (
+    settings,
     enable_settings,
     video_settings,
     valid_setting_names,
@@ -114,6 +115,18 @@ class Feature(Shortenable):
             raise ValueError("Invalid setting :", setting_name)
 
         return getattr(args, f"{self.name}_{setting_name}")
+
+    def check_setting_value_ranges(self, args):
+        for setting in settings:
+            if(
+                setting.range is not None
+                and self.get_setting_value(args, setting.name) not in setting.range
+            ):
+                raise ValueError((
+                    f"Setting value out of range : "
+                    f"{self.name}_{setting.name} with value {self.get_setting_value(args, setting.name)}"
+                    f" is not in range {setting.range}"
+                ))
 
     def video_setting_filter(self, setting_name):
         if setting_name not in valid_video_setting_names:
@@ -304,6 +317,7 @@ class Feature(Shortenable):
             return ''
 
         self.check_param_value_ranges(args)
+        self.check_setting_value_ranges(args)
 
         return (
             self.video_component(args, video_info)

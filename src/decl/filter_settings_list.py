@@ -3,6 +3,8 @@ from src.constants import UINT32_MAX
 from src.types.settings.FeatureEnableSetting import FeatureEnableSetting
 from src.types.settings.FeatureVideoSetting import FeatureVideoSetting
 
+from src.types.settings.FeatureSettingRange import FeatureSettingRange
+
 # A declarative list of filter enable settings,
 # And the respective conditions for which they are considered "active".
 # For use in output naming and reflective feature calls.
@@ -77,6 +79,7 @@ video_settings: list[FeatureVideoSetting] = [
 
         requires_overlay = True,
 
+        range = FeatureSettingRange(0.0, 1.0),
         default = 1.0,
         include_in_filename = lambda x: x < 1.0
     ),
