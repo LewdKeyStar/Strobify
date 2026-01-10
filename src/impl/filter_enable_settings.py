@@ -52,20 +52,23 @@ def enable_at_interval(start, should_invert, pause_interval, active_interval):
             f"{pause_interval if should_invert else active_interval})'"
         )
 
-def sync_with_bpm(bpm, active_percent, fps, start, should_invert):
+def bpm_synced_intervals(bpm, active_percent, fps, start, should_invert):
 
-    beat_period = 1 / (bpm / 60) # in seconds
+    if bpm == 0 :
+        active_interval = pause_interval = 0
+    else:
+        beat_period = 1 / (bpm / 60) # in seconds
 
-    period_whole, period_frac = modf(beat_period)
+        period_whole, period_frac = modf(beat_period)
 
-    beat_duration = (
-        round(period_whole * fps + (round(period_frac*100) / ((1 / fps) * 100)))
-    ) # in frames
+        beat_duration = (
+            round(period_whole * fps + (round(period_frac*100) / ((1 / fps) * 100)))
+        ) # in frames
 
-    active_interval = round(active_percent * beat_duration)
-    pause_interval = beat_duration - active_interval
+        active_interval = round(active_percent * beat_duration)
+        pause_interval = beat_duration - active_interval
 
-    return enable_at_interval(start, should_invert, pause_interval, active_interval)
+    return (pause_interval, active_interval)
 
 # TODO : this was written *after* enable_at_interval, because of the shake filter.
 # Should rewrite enable_at_interval to use it.
