@@ -1,4 +1,4 @@
-from src.impl.filter_enable_settings import interval_total_length
+from src.impl.utils.enable_settings_utils import interval_total_length
 
 from src.constants import (
     DEFAULT_ZOOM_CENTER_X, DEFAULT_ZOOM_CENTER_Y,

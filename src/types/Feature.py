@@ -28,6 +28,10 @@ from src.utils.filter_utils import (
     filter_separator
 )
 
+from src.impl.utils.enable_settings_utils import (
+    bpm_synced_intervals
+)
+
 from src.utils.misc_utils import array_find
 
 @dataclass
