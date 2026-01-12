@@ -1,7 +1,8 @@
 from src.constants import UINT32_MAX
 
 from src.types.settings.FeatureEnableSetting import FeatureEnableSetting
-from src.types.settings.FeatureVideoSetting import FeatureVideoSetting
+from src.types.settings.FilterBearingFeatureVideoSetting import FilterBearingFeatureVideoSetting
+from src.types.settings.FilterLessFeatureVideoSetting import FilterLessFeatureVideoSetting
 
 from src.types.settings.FeatureSettingRange import FeatureSettingRange
 
@@ -76,8 +77,8 @@ enable_settings: list[FeatureEnableSetting] = [
     )
 ]
 
-video_settings: list[FeatureVideoSetting] = [
-    FeatureVideoSetting(
+filter_bearing_video_settings: list[FilterBearingFeatureVideoSetting] = [
+    FilterBearingFeatureVideoSetting(
         name = "alpha",
         special_shorthand = "l",
         type = float,
@@ -89,28 +90,76 @@ video_settings: list[FeatureVideoSetting] = [
         include_in_filename = lambda x: x < 1.0
     ),
 
-    FeatureVideoSetting(
+    FilterBearingFeatureVideoSetting(
         name = "fade_in",
         include_in_filename = lambda x: x > 0,
 
         requires_overlay = True,
 
-        enable_settings_used_in_setting_filter = ["start_at"],
+        video_settings_used_in_setting_filter = [
+            "fade_out",
+            "fade_cyclical",
+            "fade_cyclical_peak",
+            "fade_cyclical_trough"
+        ],
+        enable_settings_used_in_setting_filter = [
+            "start_at",
+            "pause",
+            "active",
+            "invert_pause"
+        ],
         video_info_used_in_setting_filter = ["duration"]
     ),
 
-    FeatureVideoSetting(
+    FilterBearingFeatureVideoSetting(
         name = "fade_out",
         include_in_filename = lambda x: x > 0,
 
         requires_overlay = True,
 
-        enable_settings_used_in_setting_filter = ["end_at"],
+        video_settings_used_in_setting_filter = [
+            "fade_in",
+            "fade_cyclical",
+            "fade_cyclical_peak",
+            "fade_cyclical_trough"
+        ],
+        enable_settings_used_in_setting_filter = [
+            "start_at",
+            "end_at",
+            "pause",
+            "active",
+            "invert_pause"
+        ],
         video_info_used_in_setting_filter = ["duration"]
     )
 ]
 
+filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical",
+        type = bool,
+        default = False,
+        include_in_filename = lambda x: x
+    ),
+
+    # The number of frames in a non-synced cyclical fade between the in and out phase,
+    # where the filter stays at full opacity.
+
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical_peak",
+        include_in_filename = lambda x: x > 0
+    ),
+
+    # The number of frames separating two full in-out cycles of a non-synced cyclical fade.
+
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical_trough",
+        include_in_filename = lambda x: x > 0
+    )
+]
+
+video_settings = filter_bearing_video_settings + filterless_video_settings
 settings = enable_settings + video_settings
 
 valid_setting_names = [setting.name for setting in settings]
-valid_video_setting_names = [setting.name for setting in video_settings]
+valid_video_setting_filter_names = [setting.name for setting in filter_bearing_video_settings]

@@ -8,9 +8,10 @@ from src.types.FeatureCombineMode import FeatureCombineMode
 from src.decl.filter_settings_list import (
     settings,
     enable_settings,
-    video_settings,
+    filter_bearing_video_settings,
+    filterless_video_settings,
     valid_setting_names,
-    valid_video_setting_names
+    valid_video_setting_filter_names
 )
 
 import src.impl.feature_filters
@@ -139,7 +140,7 @@ class Feature(Shortenable):
                 ))
 
     def video_setting_filter(self, setting_name):
-        if setting_name not in valid_video_setting_names:
+        if setting_name not in valid_video_setting_filter_names:
             raise ValueError("Invalid video setting :", setting_name)
 
         return getattr(src.impl.filter_video_settings, f"{setting_name}_filter")
@@ -228,14 +229,14 @@ class Feature(Shortenable):
 
         # Alpha should not always be applied, even if it appears in settings.
 
-        alpha_setting = array_find(video_settings, lambda setting: setting.name == "alpha")
+        alpha_setting = array_find(filter_bearing_video_settings, lambda setting: setting.name == "alpha")
         alpha_setting.enabled = self.should_apply_alpha
 
         # Surprisingly, this argument bait and switch works.
         # Thank the Devil for dynamic typing :)
 
         enabled_video_settings = [
-            setting for setting in video_settings
+            setting for setting in filter_bearing_video_settings
             if setting.enabled(
                 self.get_setting_value(args, setting.name)
                 if setting.name != "alpha"
@@ -263,6 +264,13 @@ class Feature(Shortenable):
                 filterstr,
                 self.video_setting_filter(video_setting.name)(
                     *[self.get_setting_value(args, video_setting.name)],
+
+                    *[
+                        self.get_setting_value(
+                            args, required_filterless_video_setting_name
+                        )
+                        for required_filterless_video_setting_name in video_setting.video_settings_used_in_setting_filter
+                    ],
 
                     *[
                         self.get_setting_value(

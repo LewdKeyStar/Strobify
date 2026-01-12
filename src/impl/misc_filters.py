@@ -27,10 +27,16 @@ def split_filter(primary_name, secondary_name):
 def overlay_filter(primary_name, secondary_name):
     return f"[{primary_name}][{secondary_name}]overlay"
 
-def fade_filter(type, start_frame, end_frame, video_duration, n_expression):
+def fade_filter(type, start_frame, end_frame, video_duration, n_expression, cyclical_offset):
 
-    start_frame = max(0, start_frame)
-    end_frame = min(end_frame, video_duration)
+    # In the case of a cyclical fade, the modulo calculations can only work
+    # if the start offset is subtracted from the fade bounds.
+    # This does not impact the end result,
+    # because the feature is invisible before the start offset,
+    # and the n expression is arranged so that the start offset is congruent to zero.
+
+    start_frame = max(0, start_frame) - cyclical_offset
+    end_frame = min(end_frame, video_duration) - cyclical_offset
 
     def elapsed_time():
         return f"({n_expression} - {start_frame})"
@@ -50,18 +56,22 @@ def fade_filter(type, start_frame, end_frame, video_duration, n_expression):
         f")"
     )
 
-    # Still, that expression must be clamped,
+    # The fade expression must be clamped,
     # because the frame values extend outside the function definition range.
-    # # TODO : substitute N for the n_expression when cyclical
+    # In other words, we're defining a function domain.
 
     return (
         f"'if("
-            f"lt(N, {start_frame}),"
+            f"lt({n_expression}, {start_frame}),"
             f"{'p(X,Y)' if type == 'out' else '0'},"
             f"if("
-                f"gt(N, {end_frame}),"
+                f"gt({n_expression}, {duration() if type == 'in' and n_expression != 'N' else end_frame}),"
                 f"{'p(X,Y)' if type == 'in' else '0'},"
                 f"p(X,Y)*min(max(0.0, {ease_in_out_quad if type == 'in' else f'1 - {ease_in_out_quad}'}), 1.0)"
             f")"
         f")'"
     )
+
+    # I really, really don't know why duration() has to replace the end frame
+    # only on a CYCLICAL fadein rather than all fadeins period.
+    # But that's how it works. If duration() is used on a non-cyclical fadein, it breaks.

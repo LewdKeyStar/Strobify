@@ -1,5 +1,8 @@
 from math import floor, modf
 
+def effective_feature_start(feature_start_at, feature_pause, feature_invert_pause):
+    return feature_start_at + (feature_pause if feature_invert_pause else 0)
+
 def bpm_synced_intervals(bpm, active_percent, fps, start, should_invert):
 
     if bpm == 0 :
