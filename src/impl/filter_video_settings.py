@@ -1,6 +1,5 @@
-from src.impl.misc_filters import fade_filter
-
-from src.impl.utils.enable_settings_utils import effective_feature_start
+from src.impl.misc_filters import fade_in_filter_generic, fade_out_filter_generic
+from src.utils.filter_utils import filter_separator
 
 def alpha_filter(alpha):
     return (
@@ -9,95 +8,95 @@ def alpha_filter(alpha):
 
 def fade_in_filter(
     fade_in_duration,
-    fade_out_duration,
-
-    fade_cyclical,
-
-    fade_cyclical_peak,
-    fade_cyclical_trough,
 
     feature_start_at,
-    feature_pause, feature_active, feature_invert_pause,
+    feature_pause,
+    feature_invert_pause,
 
     video_duration
 ):
+    return fade_in_filter_generic(
+        fade_in_duration = fade_in_duration,
 
-    if fade_cyclical and fade_out_duration == 0:
-        raise ValueError("Cyclical fade set with no fadeout duration")
+        feature_start_at = feature_start_at,
+        feature_pause = feature_pause,
+        feature_invert_pause = feature_invert_pause,
 
-    actual_feature_start = effective_feature_start(
-        feature_start_at,
-        feature_pause,
-        feature_invert_pause
-    )
-
-    fade_in_start_at = actual_feature_start
-
-    # The total time of an in-out cycle.
-    # In the case of a non-cyclical fade, peak is irrelevant.
-    total_fade_time = fade_in_duration + (fade_cyclical_peak) + fade_out_duration
-
-    return (
-        f'''format=argb,geq=r='p(X,Y)':a={fade_filter(
-            type = "in",
-            start_frame = fade_in_start_at,
-            end_frame = fade_in_start_at + fade_in_duration,
-            video_duration = video_duration,
-            n_expression = (
-                "N" if not fade_cyclical
-                else f"mod(N - {actual_feature_start}, {total_fade_time + fade_cyclical_trough})"
-            ),
-            cyclical_offset = actual_feature_start if fade_cyclical else 0
-        )}'''
+        video_duration = video_duration
     )
 
 def fade_out_filter(
     fade_out_duration,
-    fade_in_duration,
 
-    fade_cyclical,
+    feature_end_at,
+
+    video_duration
+):
+    return fade_out_filter_generic(
+        fade_out_duration = fade_out_duration,
+
+        feature_end_at = feature_end_at,
+
+        video_duration = video_duration
+    )
+
+def fade_cyclical_filter(
+    fade_cyclical, # useless argument, if this feature is called, this flag is always set
+
+    fade_in_duration,
+    fade_out_duration,
 
     fade_cyclical_peak,
     fade_cyclical_trough,
 
+    fade_cyclical_sync,
+    fade_cyclical_sync_in_percent,
+    fade_cyclical_sync_out_percent,
+
     feature_start_at,
     feature_end_at,
-    feature_pause, feature_active, feature_invert_pause,
+    feature_pause,
+    feature_active,
+    feature_invert_pause,
 
     video_duration
 ):
 
-    if fade_cyclical and fade_in_duration == 0:
-        raise ValueError("Cyclical fade set with no fadein duration")
+    # Look.
+    # It's either this, or we set them all to False and zero in the above calls.
+    # Just go with it.
 
-    actual_feature_start = effective_feature_start(
-        feature_start_at,
-        feature_pause,
-        feature_invert_pause
-    )
+    return filter_separator(named_io=False).join([
+        fade_in_filter_generic(
+            fade_in_duration = fade_in_duration,
+            fade_out_duration = fade_out_duration,
+            fade_cyclical = fade_cyclical,
+            fade_cyclical_peak = fade_cyclical_peak,
+            fade_cyclical_trough = fade_cyclical_trough,
+            fade_cyclical_sync = fade_cyclical_sync,
+            fade_cyclical_sync_in_percent = fade_cyclical_sync_in_percent,
+            fade_cyclical_sync_out_percent = fade_cyclical_sync_out_percent,
+            feature_start_at = feature_start_at,
+            feature_pause = feature_pause,
+            feature_active = feature_active,
+            feature_invert_pause = feature_invert_pause,
+            video_duration = video_duration
+        ),
 
-    # The total time of an in-out cycle.
-    # In the case of a non-cyclical fade, peak is irrelevant.
-    # FIXME : honestly, duplicating this seems like the lesser of two evils.
-    total_fade_time = fade_in_duration + (fade_cyclical_peak) + fade_out_duration
-
-    fade_out_end_at = (
-        feature_end_at if not fade_cyclical
-        else actual_feature_start + total_fade_time # = fade_in_start_at + total_fade_time
-    )
-
-    # The min between end frame and duration has to preemptively happen here,
-    # Otherwise the start frame is incorrect.
-    return (
-        f'''format=argb,geq=r='p(X,Y)':a={fade_filter(
-            type = "out",
-            start_frame = min(fade_out_end_at, video_duration) - fade_out_duration,
-            end_frame = fade_out_end_at,
-            video_duration = video_duration,
-            n_expression = (
-                "N" if not fade_cyclical
-                else f"mod(N - {actual_feature_start}, {total_fade_time + fade_cyclical_trough})"
-            ),
-            cyclical_offset = actual_feature_start if fade_cyclical else 0
-        )}'''
-    )
+        fade_out_filter_generic(
+            fade_out_duration = fade_out_duration,
+            fade_in_duration = fade_in_duration,
+            fade_cyclical = fade_cyclical,
+            fade_cyclical_peak = fade_cyclical_peak,
+            fade_cyclical_trough = fade_cyclical_trough,
+            fade_cyclical_sync = fade_cyclical_sync,
+            fade_cyclical_sync_in_percent = fade_cyclical_sync_in_percent,
+            fade_cyclical_sync_out_percent = fade_cyclical_sync_out_percent,
+            feature_start_at = feature_start_at,
+            feature_end_at = feature_end_at,
+            feature_pause = feature_pause,
+            feature_active = feature_active,
+            feature_invert_pause = feature_invert_pause,
+            video_duration = video_duration
+        )
+    ])

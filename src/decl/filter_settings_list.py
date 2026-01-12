@@ -96,18 +96,12 @@ filter_bearing_video_settings: list[FilterBearingFeatureVideoSetting] = [
 
         requires_overlay = True,
 
-        video_settings_used_in_setting_filter = [
-            "fade_out",
-            "fade_cyclical",
-            "fade_cyclical_peak",
-            "fade_cyclical_trough"
-        ],
         enable_settings_used_in_setting_filter = [
             "start_at",
             "pause",
-            "active",
             "invert_pause"
         ],
+
         video_info_used_in_setting_filter = ["duration"]
     ),
 
@@ -117,12 +111,27 @@ filter_bearing_video_settings: list[FilterBearingFeatureVideoSetting] = [
 
         requires_overlay = True,
 
+        enable_settings_used_in_setting_filter = ["end_at"],
+
+        video_info_used_in_setting_filter = ["duration"]
+    ),
+
+    FilterBearingFeatureVideoSetting(
+        name = "fade_cyclical",
+        type = bool,
+
+        requires_overlay = True,
+
         video_settings_used_in_setting_filter = [
             "fade_in",
-            "fade_cyclical",
+            "fade_out",
             "fade_cyclical_peak",
-            "fade_cyclical_trough"
+            "fade_cyclical_trough",
+            "fade_cyclical_sync",
+            "fade_cyclical_sync_in_percent",
+            "fade_cyclical_sync_out_percent"
         ],
+
         enable_settings_used_in_setting_filter = [
             "start_at",
             "end_at",
@@ -130,18 +139,15 @@ filter_bearing_video_settings: list[FilterBearingFeatureVideoSetting] = [
             "active",
             "invert_pause"
         ],
-        video_info_used_in_setting_filter = ["duration"]
+
+        video_info_used_in_setting_filter = ["duration"],
+
+        default = False,
+        include_in_filename = lambda x: x
     )
 ]
 
 filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
-    FilterLessFeatureVideoSetting(
-        name = "fade_cyclical",
-        type = bool,
-        default = False,
-        include_in_filename = lambda x: x
-    ),
-
     # The number of frames in a non-synced cyclical fade between the in and out phase,
     # where the filter stays at full opacity.
 
@@ -154,6 +160,36 @@ filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
 
     FilterLessFeatureVideoSetting(
         name = "fade_cyclical_trough",
+        include_in_filename = lambda x: x > 0
+    ),
+
+    # Sync a cyclical fade a to a feature's active period.
+    # If this is enabled, the fade in, fade out, peak and trough values are ignored.
+
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical_sync",
+        type = bool,
+        default = False,
+        include_in_filename = lambda x: x
+    ),
+
+    # These percentages are used instead, with peak and trough deduced from them.
+
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical_sync_in_percent",
+        type = float,
+        range = FeatureSettingRange(0.0, 1.0),
+        include_in_filename = lambda x: x > 0
+        # default will not be 0.5, instead filter will set it to 0.5 if it is 0
+        # this is because otherwise, the condition would be if fade_cyclical_sync is enabled...
+        # which would require an alpha-like bait and switch on feature site, and just. no.
+        # this is the less dumb alternative for now.
+    ),
+
+    FilterLessFeatureVideoSetting(
+        name = "fade_cyclical_sync_out_percent",
+        type = float,
+        range = FeatureSettingRange(0.0, 1.0),
         include_in_filename = lambda x: x > 0
     )
 ]
