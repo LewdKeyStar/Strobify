@@ -30,6 +30,8 @@ def register_feature_setting(
 
         **parser_compatible_type(setting),
 
+        choices = setting.choices,
+
         # I don't like this default override scheme,
         # I don't like that the Feature has to return None
         # If it doesn't override the setting's "default default".

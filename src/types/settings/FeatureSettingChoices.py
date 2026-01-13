@@ -3,5 +3,5 @@ from dataclasses import dataclass
 from src.types.abstract.Choices import Choices
 
 @dataclass(repr = False)
-class FeatureParameterChoices(Choices):
+class FeatureSettingChoices(Choices):
     pass
