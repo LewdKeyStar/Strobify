@@ -51,7 +51,13 @@ def shake_filter(
 ):
 
     def t_modulo_interval():
-        return f'mod(t-{start_shake_at/fps},{interval_total_length(shake_pause, shake_active)/fps})'
+        interval = interval_total_length(shake_pause, shake_active)/fps
+        modulo = interval if round(interval) >= 1 else 1 # = modulo every second
+        # we could also to a half-second, or a certain fraction of the FPS...
+
+        # FIXME : replace with effective_feature_start ?
+        # This doesn't seem to cause problems here somehow...
+        return f'mod(t-{start_shake_at/fps},{modulo})'
 
     return (
         f"split[orig][moving];"
