@@ -238,6 +238,24 @@ features: list[Feature] = [
     ),
 
     Feature(
+        name = "gaussian_blur",
+
+        parameters = [
+            FeatureParameter(
+                "sigma",
+                special_shorthand = "sig",
+                type = float,
+                default = DEFAULT_GAUSSIAN_BLUR_SIGMA
+            ),
+            FeatureParameter(
+                "steps",
+                special_shorthand = "stp",
+                default = DEFAULT_GAUSSIAN_BLUR_STEPS
+            )
+        ]
+    ),
+
+    Feature(
         name = "shake",
 
         special_shorthand = "ss",

@@ -260,3 +260,11 @@ def fade_out_filter(
         f"n={min(fade_out_duration, video_duration)}:"
         f"c={fade_out_color}"
     )
+
+def gaussian_blur_filter(
+    gaussian_blur_sigma,
+    gaussian_blur_steps
+):
+    return (
+        f"gblur=sigma={gaussian_blur_sigma}:steps={gaussian_blur_steps}"
+    )
