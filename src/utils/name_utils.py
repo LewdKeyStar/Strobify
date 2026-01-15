@@ -5,6 +5,8 @@ from src.decl.filter_settings_list import enable_settings, video_settings
 from os.path import splitext
 from re import sub
 
+from inspect import signature
+
 def feature_section(
     args,
     feature: Feature
@@ -17,9 +19,16 @@ def feature_section(
 
         setting_value = getattr(args, f'{feature.name}_{setting.name}')
 
+        include_in_filename = (
+            setting.include_in_filename(setting_value)
+            if len(signature(setting.include_in_filename).parameters) == 1 # YEOUCH!
+            else setting.include_in_filename(args, feature.name, setting_value)
+            # Surely we can hide this bit of ugliness somewhere else...
+        )
+
         return (
             "_".join([f"{setting.name}", f"{setting_value}"])
-            if setting.include_in_filename(setting_value)
+            if include_in_filename
             else ''
         )
 

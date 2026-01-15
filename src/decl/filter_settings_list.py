@@ -69,12 +69,12 @@ enable_settings: list[FeatureEnableSetting] = [
     FeatureEnableSetting(
         name = "bpm_active_percent",
         type = float,
-        include_in_filename = lambda x: x > 0,
-        range = FeatureSettingRange(0.0, 1.0)
-        # Although this is "valid" as zero by default,
-        # It means that without providing an active percent,
-        # The active interval is 0, which means an equal pause and active interval,
-        # And thus an activation every other beat
+        range = FeatureSettingRange(0.0, 1.0),
+        default = 0.5,
+
+        include_in_filename = lambda args, feature_name, value: (
+            getattr(args, f"{feature_name}_bpm") > 0
+        )
     )
 ]
 
@@ -159,14 +159,26 @@ filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
         name = "fade_in_function",
         type = str,
         choices = FeatureSettingChoices(VALID_FADE_FUNCTIONS),
-        default = DEFAULT_FADE_FUNCTION
+        default = DEFAULT_FADE_FUNCTION,
+
+        include_in_filename = lambda args, feature_name, value: (
+            getattr(args, f"{feature_name}_fade_in")
+            or
+            getattr(args, f"{feature_name}_fade_cyclical")
+        )
     ),
 
     FilterLessFeatureVideoSetting(
         name = "fade_out_function",
         type = str,
         choices = FeatureSettingChoices(VALID_FADE_FUNCTIONS),
-        default = DEFAULT_FADE_FUNCTION
+        default = DEFAULT_FADE_FUNCTION,
+
+        include_in_filename = lambda args, feature_name, value: (
+            getattr(args, f"{feature_name}_fade_out")
+            or
+            getattr(args, f"{feature_name}_fade_cyclical")
+        )
     ),
 
     # The number of frames in a non-synced cyclical fade between the in and out phase,
@@ -200,18 +212,20 @@ filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
         name = "fade_cyclical_sync_in_percent",
         type = float,
         range = FeatureSettingRange(0.0, 1.0),
-        include_in_filename = lambda x: x > 0
-        # default will not be 0.5, instead filter will set it to 0.5 if it is 0
-        # this is because otherwise, the condition would be if fade_cyclical_sync is enabled...
-        # which would require an alpha-like bait and switch on feature site, and just. no.
-        # this is the less dumb alternative for now.
+        default = 0.5,
+        include_in_filename = lambda args, feature_name, value: (
+            getattr(args, f"{feature_name}_fade_cyclical_sync")
+        )
     ),
 
     FilterLessFeatureVideoSetting(
         name = "fade_cyclical_sync_out_percent",
         type = float,
         range = FeatureSettingRange(0.0, 1.0),
-        include_in_filename = lambda x: x > 0
+        default = 0.5,
+        include_in_filename = lambda args, feature_name, value: (
+            getattr(args, f"{feature_name}_fade_cyclical_sync")
+        )
     )
 ]
 
