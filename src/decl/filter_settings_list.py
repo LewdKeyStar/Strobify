@@ -131,6 +131,8 @@ filter_bearing_video_settings: list[FilterBearingFeatureVideoSetting] = [
 
         requires_overlay = True,
 
+        own_value_used_in_setting_filter = False,
+
         video_settings_used_in_setting_filter = [
             "fade_in",
             "fade_out",

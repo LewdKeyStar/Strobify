@@ -289,7 +289,11 @@ class Feature(Shortenable):
             filterstr = filter_separator(named_io = False).join([
                 filterstr,
                 self.video_setting_filter(video_setting.name)(
-                    *[self.get_setting_value(args, video_setting.name)],
+                    *(
+                        [self.get_setting_value(args, video_setting.name)]
+                        if video_setting.own_value_used_in_setting_filter
+                        else []
+                    ),
 
                     *[
                         self.get_setting_value(

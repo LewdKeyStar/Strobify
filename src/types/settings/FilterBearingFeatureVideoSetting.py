@@ -9,6 +9,8 @@ class FilterBearingFeatureVideoSetting(FeatureVideoSetting):
 
     requires_overlay: bool = False
 
+    own_value_used_in_setting_filter: bool = True
+
     video_settings_used_in_setting_filter: list[str] = field(default_factory = list)
     enable_settings_used_in_setting_filter: list[str] = field(default_factory = list)
     video_info_used_in_setting_filter: list[str] = field(default_factory = list)

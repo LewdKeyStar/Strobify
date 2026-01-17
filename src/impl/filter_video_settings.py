@@ -49,8 +49,6 @@ def fade_out_filter(
     )
 
 def fade_cyclical_filter(
-    fade_cyclical, # useless argument, if this feature is called, this flag is always set
-
     fade_in_duration,
     fade_out_duration,
 
@@ -82,7 +80,7 @@ def fade_cyclical_filter(
             fade_in_duration = fade_in_duration,
             fade_out_duration = fade_out_duration,
             fade_in_function = fade_in_function,
-            fade_cyclical = fade_cyclical,
+            fade_cyclical = True,
             fade_cyclical_peak = fade_cyclical_peak,
             fade_cyclical_trough = fade_cyclical_trough,
             fade_cyclical_sync = fade_cyclical_sync,
@@ -99,7 +97,7 @@ def fade_cyclical_filter(
             fade_out_duration = fade_out_duration,
             fade_in_duration = fade_in_duration,
             fade_out_function = fade_out_function,
-            fade_cyclical = fade_cyclical,
+            fade_cyclical = True,
             fade_cyclical_peak = fade_cyclical_peak,
             fade_cyclical_trough = fade_cyclical_trough,
             fade_cyclical_sync = fade_cyclical_sync,
