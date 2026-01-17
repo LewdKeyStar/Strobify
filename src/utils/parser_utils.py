@@ -3,44 +3,50 @@ from argparse import BooleanOptionalAction
 from src.decl.filter_settings_list import enable_settings, video_settings
 
 from src.types.Feature import Feature
+from src.types.settings.FeatureSetting import FeatureSetting
 
 from src.utils.text_utils import to_kebab, abbreviate
 
-def parser_compatible_type(setting_or_param):
+def parser_compatible_type(option):
     return (
         {
-            "type": setting_or_param.type,
+            "type": option.type,
             "nargs": "?"
         }
-        if setting_or_param.type != bool
+        if option.type != bool
         else {
             "action": BooleanOptionalAction
         }
     )
 
-def register_feature_setting(
+def register_feature_option(
     parser,
     feature,
-    setting
+    option
 ):
 
     parser.add_argument(
-        f"-{feature.shorthand}{setting.shorthand}",
-        f"--{to_kebab(feature.name)}-{to_kebab(setting.name)}",
+        f"-{feature.shorthand}{option.shorthand}",
+        f"--{to_kebab(feature.name)}-{to_kebab(option.name)}",
 
-        **parser_compatible_type(setting),
+        **parser_compatible_type(option),
 
-        choices = setting.choices,
-
-        # I don't like this default override scheme,
-        # I don't like that the Feature has to return None
-        # If it doesn't override the setting's "default default".
+        choices = option.choices,
 
         default = (
-            feature.default_setting_value(setting.name)
-            if feature.default_setting_value(setting.name) is not None
-            else setting.default
-        )
+            # I don't like this default override scheme,
+            # I don't like that the Feature has to return None
+            # If it doesn't override the setting's "default default".
+            (
+                feature.default_setting_value(option.name)
+                if feature.default_setting_value(option.name) is not None
+                else option.default
+            )
+            if isinstance(option, FeatureSetting)
+            else option.default
+        ),
+
+        help = option.help
     )
 
 def register_feature(
@@ -55,21 +61,12 @@ def register_feature(
         action = BooleanOptionalAction
     )
 
-    if feature.can_receive_enable_settings:
-
-        for enable_setting in enable_settings:
-
-            register_feature_setting(parser, feature, enable_setting)
-
-    if feature.can_receive_video_settings:
-
-        for video_setting in video_settings:
-
-            register_feature_setting(parser, feature, video_setting)
-
     # Feature priority is different from other arguments :
     # It's not a setting on the filter itself,
     # And therefore is not borne by the Feature instance or registered in the settings list.
+
+    # TODO : maybe we could make it a FilterLessFeatureVideoSetting now ? :thinking_face:
+    # But it doesn't get used in the Feature type's setting enforcement logic...
 
     parser.add_argument(
         f"-{feature.shorthand}r",
@@ -79,15 +76,18 @@ def register_feature(
         default = 0
     )
 
+    if feature.can_receive_enable_settings:
+
+        for enable_setting in enable_settings:
+
+            register_feature_option(parser, feature, enable_setting)
+
+    if feature.can_receive_video_settings:
+
+        for video_setting in video_settings:
+
+            register_feature_option(parser, feature, video_setting)
+
     for param in feature.parameters:
 
-        # TODO : this could/should be unified with register_feature_setting()
-
-        parser.add_argument(
-            f"-{feature.shorthand}{param.shorthand}",
-            f"--{to_kebab(feature.name)}-{to_kebab(param.name)}",
-            **parser_compatible_type(param),
-            choices = param.choices,
-            default = param.default,
-            help = param.help
-        )
+        register_feature_option(parser, feature, param)

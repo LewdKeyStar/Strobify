@@ -69,12 +69,16 @@ enable_settings: list[FeatureEnableSetting] = [
     FeatureEnableSetting(
         name = "bpm_active_percent",
         type = float,
+        unit = "%",
+
         range = FeatureSettingRange(0.0, 1.0),
         default = 0.5,
 
         include_in_filename = lambda args, feature_name, value: (
             getattr(args, f"{feature_name}_bpm") > 0
-        )
+        ),
+
+        value_format = lambda args, value: int(100*value)
     )
 ]
 
@@ -211,21 +215,31 @@ filterless_video_settings: list[FilterLessFeatureVideoSetting] = [
     FilterLessFeatureVideoSetting(
         name = "fade_cyclical_sync_in_percent",
         type = float,
+        unit = "%",
+
         range = FeatureSettingRange(0.0, 1.0),
         default = 0.5,
+
         include_in_filename = lambda args, feature_name, value: (
             getattr(args, f"{feature_name}_fade_cyclical_sync")
-        )
+        ),
+
+        value_format = lambda args, value: int(100*value)
     ),
 
     FilterLessFeatureVideoSetting(
         name = "fade_cyclical_sync_out_percent",
         type = float,
+        unit = "%",
+
         range = FeatureSettingRange(0.0, 1.0),
         default = 0.5,
+
         include_in_filename = lambda args, feature_name, value: (
             getattr(args, f"{feature_name}_fade_cyclical_sync")
-        )
+        ),
+
+        value_format = lambda args, value: int(100*value)
     )
 ]
 
