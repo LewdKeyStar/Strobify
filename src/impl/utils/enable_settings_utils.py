@@ -10,7 +10,10 @@ def bpm_synced_intervals(bpm, active_percent, fps, start, should_invert):
     else:
         beat_period = 1 / (bpm / 60) # in seconds
 
-        period_whole, period_frac = modf(beat_period)
+        period_frac, period_whole = modf(beat_period)
+
+        # In practice, calculating period_frac*fps is practically identical,
+        # But it's more exact to do it this way because of rounding.
 
         beat_duration = (
             round(period_whole * fps + (round(period_frac*100) / ((1 / fps) * 100)))
