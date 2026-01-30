@@ -50,3 +50,13 @@ def enable_at_interval(start, should_invert, pause_interval, active_interval):
             f"(mod(n-{start}, {pause_interval+active_interval}),"
             f"{pause_interval if should_invert else active_interval})'"
         )
+
+def enable_at_random(random_enabled, random_seed):
+
+    if (not random_enabled) or (random_seed < 0):
+        return "1"
+
+    return (
+        f"'if(eq(n, 0), st(1, {random_seed}));"
+        f"round(random(1))'"
+    )

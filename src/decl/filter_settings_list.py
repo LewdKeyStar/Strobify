@@ -100,6 +100,26 @@ enable_settings: list[FeatureEnableSetting] = [
         ),
 
         value_format = lambda feature_name, value: percentage_format(value)
+    ),
+
+    FeatureEnableSetting(
+        name = "random",
+        special_shorthand = "rand",
+        type = bool,
+
+        default = False,
+
+        include_in_filename = lambda feature_name, value: value
+    ),
+
+    FeatureEnableSetting(
+        name = "random_seed",
+        special_shorthand = "seed",
+        type = int,
+
+        include_in_filename = lambda feature_name, value: (
+            is_enabled_at_runtime(feature_name, "random")
+        )
     )
 ]
 
