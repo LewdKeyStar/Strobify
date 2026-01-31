@@ -194,8 +194,8 @@ def crop_filter(
             crop_left *= width
             crop_right *= width
 
-        crop_center_x = (crop_right - crop_left) / 2
-        crop_center_y = (crop_bottom - crop_top) / 2
+        crop_center_x = crop_left + (crop_right - crop_left) / 2
+        crop_center_y = crop_top + (crop_bottom - crop_top) / 2
 
     # Now that that equivalency is assured, we can begin to work out fade conditions.
 
