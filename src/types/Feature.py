@@ -231,7 +231,8 @@ class Feature(Shortenable):
             f'''enable={join_and(
                 enable_at_random(
                     self.get_setting_value("random"),
-                    self.get_setting_value("random_seed")
+                    self.get_setting_value("random_seed"),
+                    self.get_setting_value("random_probability")
                 ),
                 enable_from(self.get_setting_value("start_at")),
                 enable_until(self.get_setting_value("end_at")),

@@ -120,6 +120,23 @@ enable_settings: list[FeatureEnableSetting] = [
         include_in_filename = lambda feature_name, value: (
             is_enabled_at_runtime(feature_name, "random")
         )
+    ),
+
+    FeatureEnableSetting(
+        name = "random_probability",
+        special_shorthand = "prob",
+        type = float,
+
+        unit = "%",
+
+        range = FeatureSettingRange(0.0, 1.0),
+        default = 0.5,
+
+        include_in_filename = lambda feature_name, value: (
+            is_enabled_at_runtime(feature_name, "random")
+        ),
+
+        value_format = lambda feature_name, value: percentage_format(value)
     )
 ]
 
