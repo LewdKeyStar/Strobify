@@ -1,4 +1,4 @@
-from src.types.Feature import Feature
+from src.types.features.Feature import Feature
 
 from src.types.parameters.FeatureParameterFormatter import FeatureParameterFormatter
 from src.types.settings.FeatureSettingFormatter import FeatureSettingFormatter

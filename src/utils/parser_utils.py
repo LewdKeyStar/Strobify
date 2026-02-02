@@ -2,7 +2,7 @@ from argparse import BooleanOptionalAction
 
 from src.decl.filter_settings_list import enable_settings, video_settings
 
-from src.types.Feature import Feature
+from src.types.features.Feature import Feature
 from src.types.settings.FeatureSetting import FeatureSetting
 
 from src.utils.text_utils import to_kebab, abbreviate

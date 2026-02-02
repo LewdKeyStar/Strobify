@@ -6,7 +6,7 @@ from src.types.settings.FeatureSettingDefaultValues import FeatureSettingDefault
 
 from src.types.parameters.FeatureParameterApplicableComponent import FeatureParameterApplicableComponent
 from src.types.parameters.FeatureParameter import FeatureParameter
-from src.types.FeatureCombineMode import FeatureCombineMode
+from src.types.features.FeatureCombineMode import FeatureCombineMode
 
 from src.parser_namespace import runtime_value, is_enabled_at_runtime, override_runtime_value
 

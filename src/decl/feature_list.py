@@ -1,9 +1,9 @@
 from src.constants import *
 import src.constants
 
-from src.types.Feature import Feature
+from src.types.features.Feature import Feature
 
-from src.types.FeatureCombineMode import FeatureCombineMode
+from src.types.features.FeatureCombineMode import FeatureCombineMode
 
 from src.types.parameters.FeatureParameter import FeatureParameter
 from src.types.parameters.FeatureParameterApplicableComponent import FeatureParameterApplicableComponent

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from src.parser_namespace import runtime_value
 
-from src.types.Feature import Feature
+from src.types.features.Feature import Feature
 from src.types.abstract.options.FeatureOption import FeatureOption
 
 @dataclass(repr = False)
