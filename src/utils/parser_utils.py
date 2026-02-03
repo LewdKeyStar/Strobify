@@ -1,6 +1,6 @@
 from argparse import BooleanOptionalAction
 
-from src.decl.filter_settings_list import enable_settings, video_settings
+from src.decl.filter_settings_list import enable_settings, video_settings, meta_settings
 
 from src.types.features.Feature import Feature
 from src.types.settings.FeatureSetting import FeatureSetting
@@ -61,20 +61,9 @@ def register_feature(
         action = BooleanOptionalAction
     )
 
-    # Feature priority is different from other arguments :
-    # It's not a setting on the filter itself,
-    # And therefore is not borne by the Feature instance or registered in the settings list.
+    for meta_setting in meta_settings:
 
-    # TODO : maybe we could make it a FilterLessFeatureVideoSetting now ? :thinking_face:
-    # But it doesn't get used in the Feature type's setting enforcement logic...
-
-    parser.add_argument(
-        f"-{feature.shorthand}r",
-        f"--{to_kebab(feature.name)}-priority",
-        type = int,
-        nargs = "?",
-        default = 0
-    )
+        register_feature_option(parser, feature, meta_setting)
 
     if feature.can_receive_enable_settings:
 

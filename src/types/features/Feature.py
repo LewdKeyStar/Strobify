@@ -46,6 +46,7 @@ class Feature(Shortenable):
     name: str
 
     enable_default: bool = False # Now that the invert feature is no longer enabled by default, this goes unused.
+    default_priority: int = 0
 
     has_audio_component: bool = False
 
@@ -79,6 +80,9 @@ class Feature(Shortenable):
             and "alpha" not in self.settings_used_in_filter
         ):
             raise ValueError("Pre-merged feature declared without access to alpha")
+
+        # Dirty hack to allow default priority declaration outside of the default values dict.
+        self.default_setting_values["priority"] = self.default_priority
 
     @property
     def is_enabled(self):
@@ -392,3 +396,7 @@ class Feature(Shortenable):
             if not seeking_audio_component
             else self.audio_component(video_info)
         )
+
+    @property
+    def priority(self):
+        return self.get_setting_value("priority")
