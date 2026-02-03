@@ -217,7 +217,7 @@ class Feature(Shortenable):
             ],
 
             *[
-                self.get_setting_value(setting.name)
+                self.get_setting_value(setting_name)
                 for setting_name in self.settings_used_in_filter
             ],
 
