@@ -20,7 +20,8 @@ from src.decl.filter_settings_list import (
     valid_video_setting_filter_names
 )
 
-import src.impl.feature_filters
+from importlib import import_module # For dynamic module referencing in choosing the impl module of the feature
+
 import src.impl.settings.video_settings_impl
 from src.impl.settings.enable_settings_impl import * # TODO : automate those too through the same kind of list iteration
 
@@ -38,6 +39,8 @@ from src.utils.filter_utils import (
 from src.impl.utils.enable_settings_utils import (
     bpm_synced_intervals
 )
+
+from src.utils.text_utils import to_camel
 
 from src.utils.misc_utils import array_find
 
@@ -89,12 +92,18 @@ class Feature(Shortenable):
         return is_enabled_at_runtime(self.name)
 
     @property
+    def impl_module(self):
+        return import_module(
+            f"src.impl.features.{to_camel(type(self).__name__)}s_impl"
+        )
+
+    @property
     def feature_filter(self):
-        return getattr(src.impl.feature_filters, f"{self.name}_filter")
+        return getattr(self.impl_module, f"{self.name}_filter")
 
     @property
     def feature_filter_audio_component(self):
-        return getattr(src.impl.feature_filters, f"{self.name}_filter_audio_component")
+        return getattr(self.impl_module, f"{self.name}_filter_audio_component")
 
     def get_valid_option_names(self, option_type):
         return (
